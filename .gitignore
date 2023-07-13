@@ -1,0 +1,24 @@
+# don't add any built Java files
+*.class
+
+# ignore the built stuff
+out/
+target/
+
+# don't want to commit any Intellij config files
+.idea
+*.iml
+
+# Don't want any of those Mac finder junk files scattered all over
+.DS_Store
+
+# Don't store the minum.database we create with our application
+# that is in the root directory (there is a sample in the docs directory
+# that we *will* store for use in local testing)
+db/
+
+# This file is just a flag to show that the system is running.
+SYSTEM_RUNNING
+
+# Sometimes the Java compiler will fail and output these files, like javac.20230430_000504.args
+*.args
