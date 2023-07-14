@@ -20,9 +20,16 @@ System requirements:
 provides us the [virtual threads](https://openjdk.org/jeps/436) we need (and even so, virtual
 threading is a preview until JDK version 21).
 
+Maven is required. I tested with version 3.9.3
+
+Also, **importantly**, you will need the Minum project published to your local repo,
+that is, stored in the $HOME/.m2 directory.  In order to do this, it is necessary to
+run the following command in the [minum project](https://github.com/byronka/minum): `make mvnrepo`
+
 Developed in two environments:
 * MacBook Pro with OS 12.0.1, with OpenJDK 20
 * Windows 10 64-bit professional, on [Cygwin](https://www.cygwin.com/), OpenJDK 20
+
 
 
 Step-by-step guide for installing Java on Windows:
