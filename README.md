@@ -2,13 +2,13 @@ Minum example project using Maven
 =================================
 
 This is a simple project meant to demonstrate use of the [Minum framework](https://github.com/byronka/minum).
-A good starting point for reading this code is the [Main](src/main/example1/Main.java) and
-[TheRegister](src/main/example1/TheRegister.java) class. This example project includes the Minum
+A good starting point for reading this code is the [Main](src/main/java/com/renomad/Main.java) and
+[TheRegister](src/main/java/com/renomad/TheRegister.java) class. This example project includes the Minum
 framework as a dependency by Maven.  
 
 Note that Minum is not yet published to the central Maven
 repo. Thus, it is necessary to first run the following command in 
-the [minum project](https://github.com/byronka/minum): `make mvnrepo`.  
+the minum framework: `make mvnrepo`.  
 
 
 Quick start:
