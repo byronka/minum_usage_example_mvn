@@ -8,21 +8,21 @@ A good starting point for reading this code is the [Main](src/main/example1/Main
 Quick start:
 ------------
 
-* To run: `make run` and then visit http://localhost:8080
-* For help: `make help`
+* To build and test: `mvn install`
+* To build without testing: `mvn clean compile assembly:single`
+* To run after build: `java --enable-preview -jar target/minum_usage_example-1.0.0-jar-with-dependencies.jar`
 
 
 System requirements: 
 --------------------
 
-[JDK version 20](https://jdk.java.net/20/) is _required_.
+[JDK version 20](https://jdk.java.net/20/) is _required_, since it
+provides us the [virtual threads](https://openjdk.org/jeps/436) we need (and even so, virtual
+threading is a preview until JDK version 21).
 
 Developed in two environments:
-* MacBook Pro with OS 12.0.1, with OpenJDK 20, GNU Make 3.81 and Rsync 2.6.9
-* Windows 10 64-bit professional, on [Cygwin](https://www.cygwin.com/), OpenJDK 20, Gnu Make 4.4 and Rsync 3.2.7
-
-Note that the build tool, _Gnu Make_, is already installed on Mac.  On Windows you can install
-it through the Cygwin installer.  See [here](https://www.cygwin.com/packages/summary/make.html)
+* MacBook Pro with OS 12.0.1, with OpenJDK 20
+* Windows 10 64-bit professional, on [Cygwin](https://www.cygwin.com/), OpenJDK 20
 
 
 Step-by-step guide for installing Java on Windows:
@@ -46,7 +46,7 @@ Step-by-step guide for installing Java on Windows:
 First-time use
 --------------
 
-1. Start the application: `make clean run`
+1. Start the application (see [above](#quick-start))
 2. Go to http://localhost:8080
 3. Soak up the austere beauty of the homepage
 4. Click on **Auth**
@@ -70,7 +70,6 @@ Directories:
 ------------
 
 - src: All the source code, including production and test code
-- lib: essential utilities and dependencies
 - .git: necessary files for Git.
 
 Root-level files:
@@ -78,5 +77,4 @@ Root-level files:
 
 - app.config: a configuration file for the running app (a local / test-oriented version)
 - .gitignore: files we want Git to ignore.
-- Makefile: the configuration for Gnu Make, which is our build tool
 - README.md: this file
