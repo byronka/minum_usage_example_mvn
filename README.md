@@ -86,4 +86,6 @@ Root-level files:
 
 - app.config: a configuration file for the running app (a local / test-oriented version)
 - .gitignore: files we want Git to ignore.
+- LICENSE: the license to this software
+- pom.xml: Maven's configuration file
 - README.md: this file
