@@ -1,8 +1,14 @@
-Minum example project
-====================
+Minum example project using Maven
+=================================
 
 This is a simple project meant to demonstrate use of the [Minum framework](https://github.com/byronka/minum).
-A good starting point for reading this code is the [Main](src/main/example1/Main.java) and [TheRegister](src/main/example1/TheRegister.java) class. 
+A good starting point for reading this code is the [Main](src/main/example1/Main.java) and
+[TheRegister](src/main/example1/TheRegister.java) class. This example project includes the Minum
+framework as a dependency by Maven.  Note that Minum is not yet published to the central Maven
+repo, but rather, at this time you will need the Minum project published to your local repo.
+In order to do this, it is necessary to run the following command in 
+the [minum project](https://github.com/byronka/minum): `make mvnrepo`.  Afterwards, the rest of
+these instructions should work.
 
 
 Quick start:
@@ -21,10 +27,6 @@ provides us the [virtual threads](https://openjdk.org/jeps/436) we need (and eve
 threading is a preview until JDK version 21).
 
 Maven is required. I tested with version 3.9.3
-
-Also, **importantly**, you will need the Minum project published to your local repo,
-that is, stored in the $HOME/.m2 directory.  In order to do this, it is necessary to
-run the following command in the [minum project](https://github.com/byronka/minum): `make mvnrepo`
 
 Developed in two environments:
 * MacBook Pro with OS 12.0.1, with OpenJDK 20
