@@ -66,7 +66,7 @@ public class TheRegister {
     }
 
     private SampleDomain setupSampleDomain(AuthUtils auth) {
-        DatabaseDiskPersistenceSimpler<PersonName> sampleDomainDdps = webFramework.getDdps("names");
+        DatabaseDiskPersistenceSimpler<PersonName> sampleDomainDdps = webFramework.getDdps("names", PersonName.EMPTY);
         return new SampleDomain(sampleDomainDdps, auth);
     }
 
@@ -75,13 +75,13 @@ public class TheRegister {
     }
 
     private UploadPhoto setupUploadPhotos(AuthUtils auth) {
-        DatabaseDiskPersistenceSimpler<Photograph> photoDdps = webFramework.getDdps("photos");
+        DatabaseDiskPersistenceSimpler<Photograph> photoDdps = webFramework.getDdps("photos", Photograph.EMPTY);
         return new UploadPhoto(photoDdps, auth, context);
     }
 
     private AuthUtils buildAuthDomain() {
-        DatabaseDiskPersistenceSimpler<SessionId> sessionDdps = webFramework.getDdps("sessions");
-        DatabaseDiskPersistenceSimpler<User> userDdps = webFramework.getDdps("users");
+        DatabaseDiskPersistenceSimpler<SessionId> sessionDdps = webFramework.getDdps("sessions", SessionId.EMPTY);
+        DatabaseDiskPersistenceSimpler<User> userDdps = webFramework.getDdps("users", User.EMPTY);
         var au = new AuthUtils(sessionDdps, userDdps, context);
         new LoopingSessionReviewing(context, au).initialize();
         au.setSessionLooper();

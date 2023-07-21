@@ -7,7 +7,7 @@ import minum.database.SimpleDataTypeImpl;
  */
 public class User extends SimpleDataTypeImpl<User> {
 
-    private final long id;
+    private long id;
     private final String username;
     private final String hashedPassword;
     private final String salt;
@@ -35,6 +35,11 @@ public class User extends SimpleDataTypeImpl<User> {
     @Override
     public long getIndex() {
         return id;
+    }
+
+    @Override
+    public void setIndex(long index) {
+        this.id = index;
     }
 
     public Long getId() {
@@ -71,6 +76,6 @@ public class User extends SimpleDataTypeImpl<User> {
                 tokens.get(2),
                 tokens.get(3),
                 tokens.get(4)
-                );
+        );
     }
 }

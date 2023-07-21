@@ -20,7 +20,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.renomad.auth.RegisterResultStatus.ALREADY_EXISTING_USER;
-import static minum.database.DatabaseDiskPersistenceSimpler.calculateNextIndex;
 import static minum.utils.Invariants.mustBeTrue;
 import static minum.web.StatusLine.StatusCode._303_SEE_OTHER;
 import static minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
@@ -35,13 +34,9 @@ import static minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
  */
 public class AuthUtils {
 
-    private final List<SessionId> sessionIds;
-    private final List<User> users;
     private final ILogger logger;
     private final DatabaseDiskPersistenceSimpler<User> userDiskData;
     private final DatabaseDiskPersistenceSimpler<SessionId> sessionDiskData;
-    final AtomicLong newSessionIdentifierIndex;
-    final AtomicLong newUserIndex;
     private final String loginPageTemplate;
     private final String registerPageTemplate;
     private final Constants constants;
@@ -56,13 +51,9 @@ public class AuthUtils {
         this.sessionDiskData = sessionDiskData;
         emptyUser = User.EMPTY;
         emptySessionId = SessionId.EMPTY;
-        sessionIds = sessionDiskData.readAndDeserialize(emptySessionId);
-        users = userDiskData.readAndDeserialize(emptyUser);
         this.logger = context.getLogger();
 
 
-        newSessionIdentifierIndex = new AtomicLong(calculateNextIndex(sessionIds));
-        newUserIndex = new AtomicLong(calculateNextIndex(users));
         loginPageTemplate = FileUtils.readTemplate("auth/login_page_template.html");
         registerPageTemplate = FileUtils.readTemplate("auth/register_page_template.html");
     }
@@ -119,7 +110,7 @@ public class AuthUtils {
         }
 
         // Did we find that session identifier in the database?
-        final SessionId sessionFoundInDatabase = sessionIds.stream()
+        final SessionId sessionFoundInDatabase = sessionDiskData.stream()
                 .filter(x -> Objects.equals(x.getSessionCode().toLowerCase(), listOfSessionIds.get(0).toLowerCase()))
                 .findFirst()
                 .orElse(emptySessionId);
@@ -132,7 +123,7 @@ public class AuthUtils {
         }
 
         // find the user
-        final List<User> authenticatedUser = users.stream().filter(x -> Objects.equals(x.getCurrentSession(), sessionFoundInDatabase.getSessionCode())).toList();
+        final List<User> authenticatedUser = userDiskData.stream().filter(x -> Objects.equals(x.getCurrentSession(), sessionFoundInDatabase.getSessionCode())).toList();
 
         mustBeTrue(authenticatedUser.size() == 1, "There must be exactly one user found for a current session. We found: " + authenticatedUser.size());
 
@@ -143,15 +134,14 @@ public class AuthUtils {
     }
 
     public List<User> getUsers() {
-        return this.users.stream().toList();
+        return this.userDiskData.stream().toList();
     }
 
     public List<SessionId> getSessions() {
-        return sessionIds.stream().toList();
+        return sessionDiskData.stream().toList();
     }
 
     public void deleteSession(SessionId s) {
-        sessionIds.remove(s);
         sessionDiskData.deleteOnDisk(s);
     }
 
@@ -161,31 +151,25 @@ public class AuthUtils {
      * A temporary method used during construction, to add a session to the database.
      */
     public NewSessionResult registerNewSession(User user) {
-        final var newSession = SessionId.createNewSession(newSessionIdentifierIndex.getAndAdd(1));
+        final var newSession = SessionId.createNewSession(0);
 
         // add a new session to memory and the disk
-        sessionIds.add(newSession);
         sessionDiskData.persistToDisk(newSession);
-
-        // remove the old user details
-        users.remove(user);
 
         // create details of the new user (the one who has a session)
         final User updatedUser = new User(user.getId(), user.getUsername(), user.getHashedPassword(), user.getSalt(), newSession.getSessionCode());
-        users.add(updatedUser);
         userDiskData.updateOnDisk(updatedUser);
 
         return new NewSessionResult(newSession, updatedUser);
     }
 
     public RegisterResult registerUser(String newUsername, String newPassword) {
-        if (users.stream().anyMatch(x -> x.getUsername().equals(newUsername))) {
+        if (userDiskData.stream().anyMatch(x -> x.getUsername().equals(newUsername))) {
             return new RegisterResult(ALREADY_EXISTING_USER, emptyUser);
         }
         final var newSalt = StringUtils.generateSecureRandomString(10);
         final var hashedPassword = CryptoUtils.createPasswordHash(newPassword, newSalt);
-        final var newUser = new User(newUserIndex.getAndAdd(1), newUsername, hashedPassword, newSalt, null);
-        users.add(newUser);
+        final var newUser = new User(0, newUsername, hashedPassword, newSalt, null);
         userDiskData.persistToDisk(newUser);
         return new RegisterResult(RegisterResultStatus.SUCCESS, newUser);
     }
@@ -205,7 +189,7 @@ public class AuthUtils {
      * This is the real findUser
      */
     private LoginResult findUser(String username, String password) {
-        final var foundUsers = users.stream().filter(x -> x.getUsername().equals(username)).toList();
+        final var foundUsers = userDiskData.stream().filter(x -> x.getUsername().equals(username)).toList();
         return switch (foundUsers.size()) {
             case 0 -> new LoginResult(LoginResultStatus.NO_USER_FOUND, emptyUser);
             case 1 -> passwordCheck(foundUsers.get(0), password);
@@ -228,16 +212,14 @@ public class AuthUtils {
      * the user to have a null session value.
      */
     public User logoutUser(User user) {
-        final List<SessionId> userSession = sessionIds.stream().filter(s -> Objects.equals(s.getSessionCode(), user.getCurrentSession())).toList();
+        final List<SessionId> userSession = sessionDiskData.stream().filter(s -> Objects.equals(s.getSessionCode(), user.getCurrentSession())).toList();
         mustBeTrue(userSession.size() == 1, "There must be exactly one session found for this active session id. Count found: " + userSession.size());
 
-        sessionIds.remove(userSession.get(0));
         sessionDiskData.deleteOnDisk(userSession.get(0));
 
-        users.remove(user);
+        userDiskData.deleteOnDisk(user);
         final User updatedUser = new User(user.getId(), user.getUsername(), user.getHashedPassword(), user.getSalt(), null);
-        users.add(updatedUser);
-        userDiskData.updateOnDisk(updatedUser);
+        userDiskData.persistToDisk(updatedUser);
 
         return updatedUser;
     }

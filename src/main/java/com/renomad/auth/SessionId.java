@@ -17,7 +17,7 @@ import java.util.Objects;
  */
 public class SessionId extends SimpleDataTypeImpl<SessionId> {
 
-    private final long index;
+    private long index;
     private final String sessionCode;
     private final ZonedDateTime creationDateTime;
 
@@ -53,6 +53,11 @@ public class SessionId extends SimpleDataTypeImpl<SessionId> {
     @Override
     public long getIndex() {
         return index;
+    }
+
+    @Override
+    public void setIndex(long index) {
+        this.index = index;
     }
 
     public String getSessionCode() {
