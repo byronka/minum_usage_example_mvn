@@ -1,7 +1,7 @@
 package com.renomad.sampledomain;
 
 import com.renomad.auth.AuthUtils;
-import minum.database.DatabaseDiskPersistenceSimpler;
+import minum.database.Db;
 import minum.templating.TemplateProcessor;
 import minum.utils.FileUtils;
 import minum.utils.StringUtils;
@@ -19,13 +19,13 @@ import static minum.web.StatusLine.StatusCode.*;
 
 public class SampleDomain {
 
-    private final DatabaseDiskPersistenceSimpler<PersonName> ddps;
+    private final Db<PersonName> ddps;
     private final AuthUtils auth;
     private final TemplateProcessor nameEntryTemplate;
     private final String authHomepage;
     private final String unauthHomepage;
 
-    public SampleDomain(DatabaseDiskPersistenceSimpler<PersonName> diskData, AuthUtils auth) {
+    public SampleDomain(Db<PersonName> diskData, AuthUtils auth) {
         this.ddps = diskData;
         this.auth = auth;
         nameEntryTemplate = TemplateProcessor.buildProcessor(FileUtils.readTemplate("sampledomain/name_entry.html"));
@@ -39,7 +39,7 @@ public class SampleDomain {
             return new Response(_401_UNAUTHORIZED);
         }
         final String names = ddps
-                .stream().sorted(Comparator.comparingLong(PersonName::getIndex))
+                .values().stream().sorted(Comparator.comparingLong(PersonName::getIndex))
                 .map(x -> "<li>" + StringUtils.safeHtml(x.getFullname()) + "</li>\n")
                 .collect(Collectors.joining());
 
@@ -54,7 +54,7 @@ public class SampleDomain {
 
         final var nameEntry = r.body().asString("name_entry");
 
-        ddps.persistToDisk(new PersonName(0L, nameEntry));
+        ddps.write(new PersonName(0L, nameEntry));
         return new Response(_303_SEE_OTHER, List.of("Location: formentry"));
     }
 

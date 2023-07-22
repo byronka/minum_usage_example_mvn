@@ -114,7 +114,7 @@ public class FunctionalTests {
             // if we try sending a request that looks like an attack, block the client
             assertEquals(get("version").statusLine().status(), _404_NOT_FOUND);
             MyThread.sleep(50);
-            String vulnMsg = ((TestLogger)logger).findFirstMessageThatContains("looking for a vulnerability? true");
+            String vulnMsg = ((TestLogger)logger).findFirstMessageThatContains("looking for a vulnerability? true", 6);
             assertTrue(vulnMsg.contains("looking for a vulnerability? true"), "expect to find correct error in this: " + vulnMsg);
         }
 

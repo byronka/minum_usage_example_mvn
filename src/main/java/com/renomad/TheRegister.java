@@ -10,7 +10,7 @@ import com.renomad.sampledomain.SampleDomain;
 import com.renomad.sampledomain.UploadPhoto;
 import com.renomad.sampledomain.photo.Photograph;
 import minum.Context;
-import minum.database.DatabaseDiskPersistenceSimpler;
+import minum.database.Db;
 import minum.web.Response;
 import minum.web.StartLine;
 import minum.web.WebFramework;
@@ -66,7 +66,7 @@ public class TheRegister {
     }
 
     private SampleDomain setupSampleDomain(AuthUtils auth) {
-        DatabaseDiskPersistenceSimpler<PersonName> sampleDomainDdps = webFramework.getDdps("names", PersonName.EMPTY);
+        Db<PersonName> sampleDomainDdps = webFramework.getDdps("names", PersonName.EMPTY);
         return new SampleDomain(sampleDomainDdps, auth);
     }
 
@@ -75,13 +75,13 @@ public class TheRegister {
     }
 
     private UploadPhoto setupUploadPhotos(AuthUtils auth) {
-        DatabaseDiskPersistenceSimpler<Photograph> photoDdps = webFramework.getDdps("photos", Photograph.EMPTY);
+        Db<Photograph> photoDdps = webFramework.getDdps("photos", Photograph.EMPTY);
         return new UploadPhoto(photoDdps, auth, context);
     }
 
     private AuthUtils buildAuthDomain() {
-        DatabaseDiskPersistenceSimpler<SessionId> sessionDdps = webFramework.getDdps("sessions", SessionId.EMPTY);
-        DatabaseDiskPersistenceSimpler<User> userDdps = webFramework.getDdps("users", User.EMPTY);
+        Db<SessionId> sessionDdps = webFramework.getDdps("sessions", SessionId.EMPTY);
+        Db<User> userDdps = webFramework.getDdps("users", User.EMPTY);
         var au = new AuthUtils(sessionDdps, userDdps, context);
         new LoopingSessionReviewing(context, au).initialize();
         au.setSessionLooper();

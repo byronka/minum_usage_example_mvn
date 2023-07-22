@@ -4,7 +4,7 @@ import minum.Constants;
 import minum.Context;
 import com.renomad.auth.AuthResult;
 import com.renomad.auth.AuthUtils;
-import minum.database.DatabaseDiskPersistenceSimpler;
+import minum.database.Db;
 import minum.logging.ILogger;
 import com.renomad.sampledomain.photo.Photograph;
 import minum.utils.FileUtils;
@@ -26,13 +26,13 @@ import static minum.web.StatusLine.StatusCode._500_INTERNAL_SERVER_ERROR;
 public class UploadPhoto {
 
     private final String uploadPhotoTemplateHtml;
-    private final DatabaseDiskPersistenceSimpler<Photograph> ddps;
+    private final Db<Photograph> ddps;
     private final ILogger logger;
     private final Path dbDir;
     private final AuthUtils auth;
     private final Constants constants;
 
-    public UploadPhoto(DatabaseDiskPersistenceSimpler<Photograph> ddps, AuthUtils auth, Context context) {
+    public UploadPhoto(Db<Photograph> ddps, AuthUtils auth, Context context) {
         this.constants = context.getConstants();
         this.auth = auth;
         this.logger = context.getLogger();
@@ -77,12 +77,12 @@ public class UploadPhoto {
             logger.logAsyncError(() -> StacktraceUtils.stackTraceToString(e));
             return new Response(_500_INTERNAL_SERVER_ERROR, e.toString());
         }
-        ddps.persistToDisk(newPhotograph);
+        ddps.write(newPhotograph);
         return Response.redirectTo("photos");
     }
 
     public List<Photograph> getPhotographs() {
-        return ddps.stream().toList();
+        return ddps.values().stream().toList();
     }
 
 }

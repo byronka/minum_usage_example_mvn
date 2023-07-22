@@ -8,7 +8,7 @@ sample data - notice how it supports database persistence by implementing Simple
 the function implementations for getIndex, serialize, and deserialize as good examples for your own data.
 
 Also note key aspects of the SampleDomain class, which is the code that uses PersonName.  It 
-instantiates the DatabaseDiskPersistenceSimpler (DDPS) class for the data it uses (in this case, that is PersonName).
+instantiates the Db (DDPS) class for the data it uses (in this case, that is PersonName).
 
 Note also that an AtomicLong labeled "newPersonIndex" is instantiated (that is, it is attached to a particular instance
 of the class, and thus may vary between instances), and is used to assign new indexes to new data. It may seem unusual
