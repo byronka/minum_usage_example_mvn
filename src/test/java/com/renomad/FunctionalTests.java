@@ -2,6 +2,7 @@ package com.renomad;
 
 import minum.Context;
 import minum.logging.ILogger;
+import minum.testing.FunctionalTesting;
 import minum.testing.TestLogger;
 import minum.utils.MyThread;
 import minum.web.*;
@@ -25,16 +26,14 @@ public class FunctionalTests {
     final Server primaryServer;
     final WebEngine webEngine;
     private final Context context;
-    private final InputStreamUtils inputStreamUtils;
-    private final WebFramework webFramework;
+    private final FunctionalTesting ft;
 
     public FunctionalTests(Context context) {
         this.logger = context.getLogger();
         this.context = context;
         this.primaryServer = context.getFullSystem().getServer();
         this.webEngine = new WebEngine(context);
-        this.inputStreamUtils = new InputStreamUtils(context);
-        this.webFramework = context.getFullSystem().getWebFramework();
+        this.ft = new FunctionalTesting(context);
     }
 
     public void test() throws Exception {
@@ -44,59 +43,59 @@ public class FunctionalTests {
             grab the photos page unauthenticated. We should be able
             to view the photos.
              */
-            assertEquals(get("photos").statusLine().status(), _200_OK);
+            assertEquals(ft.get("photos").statusLine().status(), _200_OK);
 
             // go to the page for registering a user, while unauthenticated.
-            assertEquals(get("register").statusLine().status(), _200_OK);
+            assertEquals(ft.get("register").statusLine().status(), _200_OK);
 
             // register a user
-            var registrationResponse = post("registeruser", "username=foo&password=bar");
+            var registrationResponse = ft.post("registeruser", "username=foo&password=bar");
             assertEquals(registrationResponse.statusLine().status(), _303_SEE_OTHER);
             assertEquals(registrationResponse.headers().valueByKey("location"), List.of("login"));
 
             // Go to the login page, unauthenticated
-            assertEquals(get("login").statusLine().status(), _200_OK);
+            assertEquals(ft.get("login").statusLine().status(), _200_OK);
 
             // login as the user we registered
-            var response = post("loginuser", "username=foo&password=bar");
+            var response = ft.post("loginuser", "username=foo&password=bar");
             var cookieValue = String.join(";", response.headers().valueByKey("set-cookie"));
 
             // try visiting the registration page while authenticated (should get redirected)
             List<String> authHeader = List.of("Cookie: " + cookieValue);
-            var registrationResponseAuthd = post("registeruser", "username=foo&password=bar", authHeader);
+            var registrationResponseAuthd = ft.post("registeruser", "username=foo&password=bar", authHeader);
             assertEquals(registrationResponseAuthd.statusLine().status(), _303_SEE_OTHER);
             assertEquals(registrationResponseAuthd.headers().valueByKey("location"), List.of("index"));
 
             // try visiting the login page while authenticated (should get redirected)
-            assertEquals(get("login", authHeader).statusLine().status(), _303_SEE_OTHER);
+            assertEquals(ft.get("login", authHeader).statusLine().status(), _303_SEE_OTHER);
 
             // visit the page for uploading photos, authenticated
-            get("upload", authHeader);
+            ft.get("upload", authHeader);
 
             // upload some content, authenticated
-            post("upload", "image_uploads=123&short_descriptionbar=&long_description=foofoo", authHeader);
+            ft.post("upload", "image_uploads=123&short_descriptionbar=&long_description=foofoo", authHeader);
 
             // check out what's on the photos page now, unauthenticated
-            var response2 = get("photos");
+            var response2 = ft.get("photos");
             var htmlResponse = response2.body().asString();
             String photoSrc = find("photo\\?name=[a-z0-9\\-]*", htmlResponse);
 
             // look at the contents of a particular photo, unauthenticated
-            get(photoSrc, authHeader);
+            ft.get(photoSrc, authHeader);
 
             // check out what's on the sample domain page, authenticated
-            assertTrue(get("index", authHeader).body().asString().contains("Enter a name"));
-            assertTrue(get("formEntry", authHeader).body().asString().contains("Name Entry"));
-            assertEquals(post("testform", "name_entry=abc", authHeader).statusLine().status(), _303_SEE_OTHER);
+            assertTrue(ft.get("index", authHeader).body().asString().contains("Enter a name"));
+            assertTrue(ft.get("formEntry", authHeader).body().asString().contains("Name Entry"));
+            assertEquals(ft.post("testform", "name_entry=abc", authHeader).statusLine().status(), _303_SEE_OTHER);
 
             // logout
-            assertEquals(get("logout", authHeader).statusLine().status(), _303_SEE_OTHER);
+            assertEquals(ft.get("logout", authHeader).statusLine().status(), _303_SEE_OTHER);
 
             // if we try to upload a photo unauth, we're prevented
-            assertEquals(post("upload", "foo=bar").statusLine().status(), _401_UNAUTHORIZED);
+            assertEquals(ft.post("upload", "foo=bar").statusLine().status(), _401_UNAUTHORIZED);
 
             // if we try to upload a name on the sampledomain auth, we're prevented
-            assertEquals(post("testform", "foo=bar").statusLine().status(), _401_UNAUTHORIZED);
+            assertEquals(ft.post("testform", "foo=bar").statusLine().status(), _401_UNAUTHORIZED);
 
             // *********** ERROR HANDLING SECTION *****************
             // if we try sending too many characters on a line, it should block us
@@ -112,90 +111,12 @@ public class FunctionalTests {
             assertEquals(failureMsg, "in readLine, client sent more bytes than allowed.  Current max: 500");
 
             // if we try sending a request that looks like an attack, block the client
-            assertEquals(get("version").statusLine().status(), _404_NOT_FOUND);
+            assertEquals(ft.get("version").statusLine().status(), _404_NOT_FOUND);
             MyThread.sleep(50);
             String vulnMsg = ((TestLogger)logger).findFirstMessageThatContains("looking for a vulnerability? true", 6);
             assertTrue(vulnMsg.contains("looking for a vulnerability? true"), "expect to find correct error in this: " + vulnMsg);
         }
 
-    }
-
-    record TestResponse(StatusLine statusLine, Headers headers, Body body) {}
-
-    public TestResponse get(String path) throws IOException {
-        return get(path, List.of());
-    }
-
-    public TestResponse get(String path, List<String> extraHeaders) throws IOException {
-        Body body = Body.EMPTY(context);
-        Headers headers;
-        StatusLine statusLine;
-        try (var client = webEngine.startClient(primaryServer)) {
-            InputStream is = client.getInputStream();
-
-            // send a GET request
-            client.sendHttpLine("GET /"+path+" HTTP/1.1");
-            client.sendHttpLine("Host: localhost:8080");
-            for (String header : extraHeaders) {
-                client.sendHttpLine(header);
-            }
-            client.sendHttpLine("");
-
-            statusLine = StatusLine.extractStatusLine(inputStreamUtils.readLine(is));
-
-            headers = Headers.make(context, inputStreamUtils).extractHeaderInformation(is);
-
-            BodyProcessor bodyProcessor = new BodyProcessor(context);
-
-
-            // Determine whether there is a body (a block of data) in this request
-            if (webFramework.isThereIsABody(headers)) {
-                logger.logTrace(() -> "There is a body. Content-type is " + headers.contentType());
-                body = bodyProcessor.extractData(is, headers);
-            }
-
-        }
-        MyThread.sleep(100);
-        return new TestResponse(statusLine, headers, body);
-    }
-
-    public TestResponse post(String path, String payload) throws IOException {
-        return post(path, payload, List.of());
-    }
-
-    public TestResponse post(String path, String payload, List<String> extraHeaders) throws IOException {
-        Body body = Body.EMPTY(context);
-        Headers headers;
-        StatusLine statusLine;
-        try (var client = webEngine.startClient(primaryServer)) {
-            InputStream is = client.getInputStream();
-
-            // send a POST request
-            client.sendHttpLine("POST /"+path+" HTTP/1.1");
-            client.sendHttpLine("Host: localhost:8080");
-            client.sendHttpLine("Content-Length: " + payload.length());
-            client.sendHttpLine("Content-Type: application/x-www-form-urlencoded");
-            for (String header : extraHeaders) {
-                client.sendHttpLine(header);
-            }
-            client.sendHttpLine("");
-            client.sendHttpLine(payload);
-
-            statusLine = StatusLine.extractStatusLine(inputStreamUtils.readLine(is));
-
-            headers = Headers.make(context, inputStreamUtils).extractHeaderInformation(is);
-
-            BodyProcessor bodyProcessor = new BodyProcessor(context);
-
-
-            if (webFramework.isThereIsABody(headers)) {
-                logger.logTrace(() -> "There is a body. Content-type is " + headers.contentType());
-                body = bodyProcessor.extractData(is, headers);
-            }
-
-        }
-        MyThread.sleep(100);
-        return new TestResponse(statusLine, headers, body);
     }
 
 }
