@@ -81,7 +81,7 @@ public class SampleDomain {
      */
     public Response helloName(Request request) {
         String name = request.startLine().queryString().get("name");
-        return new Response(_200_OK, "hello " + name, List.of("Content-type: text/plain"));
+        return Response.htmlOk("hello " + name);
     }
 
 }
