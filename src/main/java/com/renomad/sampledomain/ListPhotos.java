@@ -81,9 +81,9 @@ public class ListPhotos {
         if (lruCache.containsKey(filename)) {
             logger.logDebug(() -> "Found " + filename + " in the cache. Serving.");
             return new Response(_200_OK, lruCache.get(filename),
-                    List.of(
-                            "Cache-Control: max-age=604800",
-                            "Content-Type: image/jpeg"
+                    Map.of(
+                            "Cache-Control","max-age=604800",
+                            "Content-Type","image/jpeg"
                     ));
         }
         // first let's check to see whether the file is even there.
@@ -126,9 +126,9 @@ public class ListPhotos {
                 lruCache.put(filename, bytes);
 
                 return new Response(_200_OK, bytes,
-                        List.of(
-                                "Cache-Control: max-age=604800",
-                                "Content-Type: image/jpeg"
+                        Map.of(
+                                "Cache-Control","max-age=604800",
+                                "Content-Type","image/jpeg"
                         ));
 
             }

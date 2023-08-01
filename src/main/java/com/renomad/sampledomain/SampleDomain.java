@@ -55,7 +55,7 @@ public class SampleDomain {
         final var nameEntry = r.body().asString("name_entry");
 
         db.write(new PersonName(0L, nameEntry));
-        return new Response(_303_SEE_OTHER, List.of("Location: formentry"));
+        return new Response(_303_SEE_OTHER, Map.of("Location","formentry"));
     }
 
     /**

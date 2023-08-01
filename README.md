@@ -14,7 +14,7 @@ the minum framework: `make mvnrepo`.
 Quick start:
 ------------
 
-* To build and test: `mvn install`
+* To build and test: `mvn package`
 * To build without testing: `mvn clean compile assembly:single`
 * To run after build: `java --enable-preview -jar target/minum_usage_example-1.0.0-jar-with-dependencies.jar`
 

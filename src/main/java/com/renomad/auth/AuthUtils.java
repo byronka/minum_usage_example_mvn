@@ -4,16 +4,14 @@ import minum.Constants;
 import minum.Context;
 import minum.database.Db;
 import minum.logging.ILogger;
-import minum.utils.CryptoUtils;
-import minum.utils.FileUtils;
-import minum.utils.InvariantException;
-import minum.utils.StringUtils;
+import minum.utils.*;
 import minum.web.Request;
 import minum.web.Response;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
@@ -237,16 +235,16 @@ public class AuthUtils {
 
         switch (loginResult.status()) {
             case SUCCESS -> {
-                return new Response(_303_SEE_OTHER, List.of(
-                        "Location: index.html",
-                        "Set-Cookie: %s=%s; Secure; HttpOnly; Domain=%s".formatted(cookieKey, loginResult.user().getCurrentSession(), hostname)));
+                return new Response(_303_SEE_OTHER, Map.of(
+                        "Location","index.html",
+                        "Set-Cookie","%s=%s; Secure; HttpOnly; Domain=%s".formatted(cookieKey, loginResult.user().getCurrentSession(), hostname)));
             }
             default -> {
                 return new Response(_401_UNAUTHORIZED,
                         """
                         Invalid account credentials. <a href="index.html">Index</a>
                         """,
-                        List.of("Content-Type: text/html"));
+                        Map.of("Content-Type","text/html"));
             }
         }
     }
@@ -263,7 +261,7 @@ public class AuthUtils {
     public Response registerUser(Request r) {
         final var authResult = processAuth(r);
         if (authResult.isAuthenticated()) {
-            return new Response(_303_SEE_OTHER, List.of("Location: index"));
+            return new Response(_303_SEE_OTHER, Map.of("Location","index"));
         }
 
         final var username = r.body().asString("username");
@@ -271,9 +269,9 @@ public class AuthUtils {
         final var registrationResult = registerUser(username, password);
 
         if (registrationResult.status() == ALREADY_EXISTING_USER) {
-            return new Response(_401_UNAUTHORIZED, "<p>This user is already registered</p><p><a href=\"index.html\">Index</a></p>", List.of("content-type: text/html"));
+            return new Response(_401_UNAUTHORIZED, "<p>This user is already registered</p><p><a href=\"index.html\">Index</a></p>", Map.of("content-type","text/html"));
         }
-        return new Response(_303_SEE_OTHER, List.of("Location: login"));
+        return new Response(_303_SEE_OTHER, Map.of("Location","login"));
 
     }
 
