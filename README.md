@@ -6,13 +6,13 @@ A good starting point for reading this code is the [Main](src/main/java/com/reno
 [TheRegister](src/main/java/com/renomad/TheRegister.java) class. This example project includes the Minum
 framework as a dependency by Maven.  
 
-Note that Minum is not yet published to the central Maven
-repo. Thus, it is necessary to first run the following command in 
-the minum framework: `make mvnrepo`.  
-
 
 Quick start:
 ------------
+
+Note that Minum is not yet published to the central Maven
+repo. Thus, it is necessary to first run the following command in 
+the [minum framework](https://github.com/byronka/minum): `make mvnrepo`.  
 
 * To build and test: `mvn package`
 * To build without testing: `mvn clean compile assembly:single`
