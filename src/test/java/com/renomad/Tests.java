@@ -3,9 +3,8 @@ package com.renomad;
 import com.renomad.sampledomain.ListPhotosTests;
 import minum.Constants;
 import minum.Context;
-import minum.FullSystem;
 import minum.logging.LoggingContext;
-import minum.testing.TestLogger;
+import minum.logging.TestLogger;
 import minum.utils.*;
 import minum.web.*;
 import org.junit.Test;
@@ -115,7 +114,6 @@ public class Tests {
   private void shutdownFunctionalTests(Context context) throws IOException {
     FileUtils.deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().DB_DIRECTORY), context.getLogger());
     var fs2 = context.getFullSystem();
-    fs2.removeShutdownHook();
     fs2.close();
     context.getExecutorService().shutdownNow();
     ((TestLogger)context.getLogger()).writeTestReport("functional_tests");

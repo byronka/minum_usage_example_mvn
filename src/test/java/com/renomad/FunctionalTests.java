@@ -2,8 +2,7 @@ package com.renomad;
 
 import minum.Context;
 import minum.logging.ILogger;
-import minum.testing.FunctionalTesting;
-import minum.testing.TestLogger;
+import minum.logging.TestLogger;
 import minum.utils.MyThread;
 import minum.web.*;
 
@@ -23,16 +22,12 @@ import static minum.web.StatusLine.StatusCode.*;
 public class FunctionalTests {
 
     private final TestLogger logger;
-    final Server primaryServer;
-    final WebEngine webEngine;
     private final Context context;
     private final FunctionalTesting ft;
 
     public FunctionalTests(Context context) {
         this.logger = (TestLogger)context.getLogger();
         this.context = context;
-        this.primaryServer = context.getFullSystem().getServer();
-        this.webEngine = new WebEngine(context);
         this.ft = new FunctionalTesting(context);
         logger.testSuite("FunctionalTests");
     }
@@ -43,7 +38,7 @@ public class FunctionalTests {
 
         /* Request a static png image that needed a mime type we just provided */
         assertEquals(ft.get("moon.png").statusLine().status(), _200_OK);
-        assertEquals(ft.get("moon.png").headers().getHeadersMap().get("content-type"), List.of("image/png"));
+        assertEquals(ft.get("moon.png").headers().valueByKey("content-type"), List.of("image/png"));
 
         logger.test("grab the photos page unauthenticated. We should be able to view the photos.");
         assertEquals(ft.get("photos").statusLine().status(), _200_OK);
@@ -103,10 +98,7 @@ public class FunctionalTests {
         // *********** ERROR HANDLING SECTION *****************
 
         logger.test("if we try sending too many characters on a line, it should block us");
-        try (var client = webEngine.startClient(primaryServer)) {
-            // send a GET request
-            client.sendHttpLine("a".repeat(context.getConstants().MAX_READ_LINE_SIZE_BYTES + 1));
-        }
+        ft.get("a".repeat(context.getConstants().MAX_READ_LINE_SIZE_BYTES + 1));
 
         // remember, we're the client, we don't have immediate access to the server here.  So,
         // we have to wait for it to get through some processing before we check.

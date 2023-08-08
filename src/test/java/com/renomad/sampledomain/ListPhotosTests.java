@@ -1,7 +1,7 @@
 package com.renomad.sampledomain;
 
 import minum.Context;
-import minum.testing.TestLogger;
+import minum.logging.TestLogger;
 import minum.utils.LRUCache;
 
 import java.util.Map;
