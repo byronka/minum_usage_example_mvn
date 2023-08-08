@@ -66,7 +66,7 @@ public class TheRegister {
     }
 
     private SampleDomain setupSampleDomain(AuthUtils auth) {
-        Db<PersonName> sampleDomainDb = webFramework.getDb("names", PersonName.EMPTY);
+        Db<PersonName> sampleDomainDb = context.getDb("names", PersonName.EMPTY);
         return new SampleDomain(sampleDomainDb, auth);
     }
 
@@ -75,13 +75,13 @@ public class TheRegister {
     }
 
     private UploadPhoto setupUploadPhotos(AuthUtils auth) {
-        Db<Photograph> photoDb = webFramework.getDb("photos", Photograph.EMPTY);
+        Db<Photograph> photoDb = context.getDb("photos", Photograph.EMPTY);
         return new UploadPhoto(photoDb, auth, context);
     }
 
     private AuthUtils buildAuthDomain() {
-        Db<SessionId> sessionDb = webFramework.getDb("sessions", SessionId.EMPTY);
-        Db<User> userDb = webFramework.getDb("users", User.EMPTY);
+        Db<SessionId> sessionDb = context.getDb("sessions", SessionId.EMPTY);
+        Db<User> userDb = context.getDb("users", User.EMPTY);
         var au = new AuthUtils(sessionDb, userDb, context);
         new LoopingSessionReviewing(context, au).initialize();
         au.setSessionLooper();
