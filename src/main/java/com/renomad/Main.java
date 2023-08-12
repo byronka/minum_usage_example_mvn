@@ -6,7 +6,7 @@ import minum.web.FullSystem;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         // Initialize the constants, these are used throughout the system
         var constants = new Constants();
 

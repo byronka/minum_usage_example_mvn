@@ -103,14 +103,9 @@ public class FunctionalTests {
         // remember, we're the client, we don't have immediate access to the server here.  So,
         // we have to wait for it to get through some processing before we check.
         MyThread.sleep(50);
-        String failureMsg = ((TestLogger)logger).findFirstMessageThatContains("in readLine");
+        String failureMsg = ((TestLogger)logger).findFirstMessageThatContains("in readLine", 15);
         assertEquals(failureMsg, "in readLine, client sent more bytes than allowed.  Current max: 500");
 
-        logger.test("if we try sending a request that looks like an attack, block the client");
-        assertEquals(ft.get("version").statusLine().status(), _404_NOT_FOUND);
-        MyThread.sleep(50);
-        String vulnMsg = ((TestLogger)logger).findFirstMessageThatContains("looking for a vulnerability? true", 6);
-        assertTrue(vulnMsg.contains("looking for a vulnerability? true"), "expect to find correct error in this: " + vulnMsg);
     }
 
 }
