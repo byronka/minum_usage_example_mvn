@@ -3,30 +3,21 @@ package com.renomad;
 import com.renomad.sampledomain.ListPhotosTests;
 import minum.Constants;
 import minum.Context;
-import minum.logging.LoggingContext;
 import minum.logging.TestLogger;
 import minum.utils.*;
 import minum.web.*;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.concurrent.ExecutorService;
 
 public class Tests {
 
   public static void main(String[] args) {
     var tests = new Tests();
-    tests.start();
+    tests.testEverything();
   }
 
-  @Test
-  public void runTests() {
-    var tests = new Tests();
-    tests.start();
-  }
-
-  private void start() {
+  public void testEverything() {
     try {
       unitAndIntegrationTests();
       testFullSystem_Soup_To_Nuts();
