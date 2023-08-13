@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.renomad</groupId>
+  <groupId>renomad</groupId>
   <artifactId>minum_usage_example</artifactId>
   <version>1.0.0</version>
 
@@ -12,16 +12,30 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>20</maven.compiler.source>
+    <maven.compiler.target>20</maven.compiler.target>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>com.renomad</groupId>
+      <groupId>renomad</groupId>
       <artifactId>minum</artifactId>
       <version>1.0.0</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>renomad</groupId>
+      <artifactId>minum</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>renomad</groupId>
+      <artifactId>minum</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+      <classifier>javadoc</classifier>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
