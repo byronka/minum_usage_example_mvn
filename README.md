@@ -14,9 +14,17 @@ Note that Minum is not yet published to the central Maven
 repo. Thus, it is necessary to first run the following command in 
 the [minum framework](https://github.com/byronka/minum): `make mvnrepo`.  
 
-* To build and test: `mvn package`
-* To build without testing: `mvn clean compile assembly:single`
-* To run after build: `java --enable-preview -jar target/minum_usage_example-1.0.0-jar-with-dependencies.jar`
+* To run: 
+
+```shell
+./mvnw compile exec:java
+```
+
+* To test:
+
+```shell
+./mvnw test
+```
 
 
 System requirements: 
