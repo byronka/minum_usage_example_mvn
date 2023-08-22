@@ -10,10 +10,6 @@ framework as a dependency by Maven.
 Quick start:
 ------------
 
-Note that Minum is not yet published to the central Maven
-repo. Thus, it is necessary to first run the following command in 
-the [minum framework](https://github.com/byronka/minum): `make mvnrepo`.  
-
 * To run: 
 
 ```shell
