@@ -25,12 +25,12 @@ public class SampleDomain {
     private final String authHomepage;
     private final String unauthHomepage;
 
-    public SampleDomain(Db<PersonName> diskData, AuthUtils auth) {
+    public SampleDomain(Db<PersonName> diskData, AuthUtils auth, FileUtils fileUtils) {
         this.db = diskData;
         this.auth = auth;
-        nameEntryTemplate = TemplateProcessor.buildProcessor(FileUtils.readTemplate("sampledomain/name_entry.html"));
-        authHomepage = FileUtils.readTemplate("sampledomain/auth_homepage.html");
-        unauthHomepage = FileUtils.readTemplate("sampledomain/unauth_homepage.html");
+        nameEntryTemplate = TemplateProcessor.buildProcessor(fileUtils.readTextFile("target/classes/templates/sampledomain/name_entry.html"));
+        authHomepage = fileUtils.readTextFile("target/classes/templates/sampledomain/auth_homepage.html");
+        unauthHomepage = fileUtils.readTextFile("target/classes/templates/sampledomain/unauth_homepage.html");
     }
 
     public Response formEntry(Request r) {

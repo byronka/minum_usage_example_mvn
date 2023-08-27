@@ -40,6 +40,7 @@ public class AuthUtils {
     private final Constants constants;
     private final User emptyUser;
     private final SessionId emptySessionId;
+    private final FileUtils fileUtils;
 
     public AuthUtils(Db<SessionId> sessionDiskData,
                      Db<User> userDiskData,
@@ -50,10 +51,10 @@ public class AuthUtils {
         emptyUser = User.EMPTY;
         emptySessionId = SessionId.EMPTY;
         this.logger = context.getLogger();
+        this.fileUtils = context.getFileUtils();
 
-
-        loginPageTemplate = FileUtils.readTemplate("auth/login_page_template.html");
-        registerPageTemplate = FileUtils.readTemplate("auth/register_page_template.html");
+        loginPageTemplate = fileUtils.readTextFile("target/classes/templates/auth/login_page_template.html");
+        registerPageTemplate = fileUtils.readTextFile("target/classes/templates/auth/register_page_template.html");
     }
 
     public static final String cookieKey = "sessionid";

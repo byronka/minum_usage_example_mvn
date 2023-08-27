@@ -37,7 +37,8 @@ public class UploadPhoto {
         this.auth = auth;
         this.logger = context.getLogger();
         this.dbDir = Path.of(constants.DB_DIRECTORY);
-        uploadPhotoTemplateHtml = FileUtils.readTemplate("uploadphoto/upload_photo_template.html");
+
+        uploadPhotoTemplateHtml = context.getFileUtils().readTextFile("target/classes/templates/uploadphoto/upload_photo_template.html");
         this.db = db;
     }
 
