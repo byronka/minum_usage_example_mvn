@@ -1,16 +1,16 @@
 package com.renomad.sampledomain;
 
-import minum.Constants;
-import minum.Context;
+import com.renomad.minum.Constants;
+import com.renomad.minum.Context;
 import com.renomad.auth.AuthResult;
 import com.renomad.auth.AuthUtils;
-import minum.database.Db;
-import minum.logging.ILogger;
+import com.renomad.minum.database.Db;
+import com.renomad.minum.logging.ILogger;
 import com.renomad.sampledomain.photo.Photograph;
-import minum.utils.FileUtils;
-import minum.utils.StacktraceUtils;
-import minum.web.Request;
-import minum.web.Response;
+import com.renomad.minum.utils.FileUtils;
+import com.renomad.minum.utils.StacktraceUtils;
+import com.renomad.minum.web.Request;
+import com.renomad.minum.web.Response;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
-import static minum.web.StatusLine.StatusCode._500_INTERNAL_SERVER_ERROR;
+import static com.renomad.minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
+import static com.renomad.minum.web.StatusLine.StatusCode._500_INTERNAL_SERVER_ERROR;
 
 
 public class UploadPhoto {

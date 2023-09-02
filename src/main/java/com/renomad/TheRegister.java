@@ -9,11 +9,11 @@ import com.renomad.sampledomain.PersonName;
 import com.renomad.sampledomain.SampleDomain;
 import com.renomad.sampledomain.UploadPhoto;
 import com.renomad.sampledomain.photo.Photograph;
-import minum.Context;
-import minum.database.Db;
-import minum.web.Response;
-import minum.web.StartLine;
-import minum.web.WebFramework;
+import com.renomad.minum.Context;
+import com.renomad.minum.database.Db;
+import com.renomad.minum.web.Response;
+import com.renomad.minum.web.StartLine;
+import com.renomad.minum.web.WebFramework;
 
 /**
  * This class is where all code gets registered to work

@@ -1,9 +1,9 @@
 package com.renomad.auth;
 
-import minum.database.DbData;
+import com.renomad.minum.database.DbData;
 
-import static minum.utils.SerializationUtils.deserializeHelper;
-import static minum.utils.SerializationUtils.serializeHelper;
+import static com.renomad.minum.utils.SerializationUtils.deserializeHelper;
+import static com.renomad.minum.utils.SerializationUtils.serializeHelper;
 
 /**
  * A data structure representing authentication information for a user.

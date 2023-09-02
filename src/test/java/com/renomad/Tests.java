@@ -1,18 +1,19 @@
 package com.renomad;
 
 import com.renomad.sampledomain.ListPhotosTests;
-import minum.Constants;
-import minum.Context;
-import minum.logging.TestLogger;
-import minum.utils.*;
-import minum.web.*;
+import com.renomad.minum.Constants;
+import com.renomad.minum.Context;
+import com.renomad.minum.logging.TestLogger;
+import com.renomad.minum.utils.*;
+import com.renomad.minum.web.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static com.renomad.minum.testing.TestFramework.buildTestingContext;
+
 public class Tests {
 
-  Context context;
 
   public static void main(String[] args) {
     var tests = new Tests();
@@ -25,8 +26,8 @@ public class Tests {
       testFullSystem_Soup_To_Nuts();
       indicateTestsFinished();
     } catch (Exception ex) {
-      MyThread.sleep(100);
-      ex.printStackTrace();
+      String exceptionString = StacktraceUtils.stackTraceToString(ex);
+      System.out.println(exceptionString);
     }
   }
 
@@ -52,7 +53,7 @@ public class Tests {
    * stop short of running {@link FullSystem}.
    */
   private void unitAndIntegrationTests() throws Exception {
-    Context context = buildContext("_unit_test");
+    Context context = buildTestingContext("_unit_test");
 
     new ListPhotosTests(context).tests();
 
@@ -71,28 +72,8 @@ public class Tests {
     shutdownFunctionalTests(context);
   }
 
-  private Context buildContext(String loggerName) {
-    var constants = new Constants();
-    var executorService = ExtendedExecutor.makeExecutorService(constants);
-    var logger = new TestLogger(constants, executorService, loggerName);
-    var fileUtils = new FileUtils(logger, constants);
-    var inputStreamUtils = new InputStreamUtils(logger, constants);
-
-    var context = new Context();
-
-    context.setConstants(constants);
-    context.setExecutorService(executorService);
-    context.setLogger(logger);
-    context.setFileUtils(fileUtils);
-    context.setInputStreamUtils(inputStreamUtils);
-
-    this.context = context;
-    return context;
-  }
-
   private void handleShutdown(Context context) throws IOException {
     var logger = (TestLogger) context.getLogger();
-    logger.writeTestReport("unit_tests");
     context.getFileUtils().deleteDirectoryRecursivelyIfExists(Path.of(constants.DB_DIRECTORY), logger);
     new ActionQueueKiller(context).killAllQueues();
     context.getExecutorService().shutdownNow();
@@ -101,10 +82,9 @@ public class Tests {
 
   private Context buildContextFunctionalTests() throws IOException {
     System.out.println("Starting a soup-to-nuts tests of the full system");
-    var context = buildContext("_integration_test");
+    var context = buildTestingContext("_integration_test");
     new FullSystem(context).start();
     new TheRegister(context).registerDomains();
-    this.context = context;
     return context;
   }
 
@@ -114,7 +94,6 @@ public class Tests {
     context.getFileUtils().deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().DB_DIRECTORY), context.getLogger());
     var fs = context.getFullSystem();
     fs.close();
-    ((TestLogger)context.getLogger()).writeTestReport("functional_tests");
     context.getLogger().stop();
     context.getExecutorService().shutdownNow();
   }

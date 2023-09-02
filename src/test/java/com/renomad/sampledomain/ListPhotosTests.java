@@ -1,12 +1,12 @@
 package com.renomad.sampledomain;
 
-import minum.Context;
-import minum.logging.TestLogger;
-import minum.utils.LRUCache;
+import com.renomad.minum.Context;
+import com.renomad.minum.logging.TestLogger;
+import com.renomad.minum.utils.LRUCache;
 
 import java.util.Map;
 
-import static minum.testing.TestFramework.*;
+import static com.renomad.minum.testing.TestFramework.*;
 
 public class ListPhotosTests {
 
@@ -14,7 +14,6 @@ public class ListPhotosTests {
 
     public ListPhotosTests(Context context) {
         this.logger = (TestLogger) context.getLogger();
-        logger.testSuite("ListPhotosTests");
     }
 
     public void tests() {

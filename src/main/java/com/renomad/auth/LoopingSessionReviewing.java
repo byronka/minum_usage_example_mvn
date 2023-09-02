@@ -1,11 +1,11 @@
 package com.renomad.auth;
 
-import minum.Constants;
-import minum.Context;
-import minum.logging.ILogger;
-import minum.logging.LoggingLevel;
-import minum.utils.MyThread;
-import minum.utils.TimeUtils;
+import com.renomad.minum.Constants;
+import com.renomad.minum.Context;
+import com.renomad.minum.logging.ILogger;
+import com.renomad.minum.logging.LoggingLevel;
+import com.renomad.minum.utils.MyThread;
+import com.renomad.minum.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;

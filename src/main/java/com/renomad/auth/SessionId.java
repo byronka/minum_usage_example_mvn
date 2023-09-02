@@ -1,16 +1,16 @@
 package com.renomad.auth;
 
 
-import minum.database.DbData;
-import minum.utils.StringUtils;
+import com.renomad.minum.database.DbData;
+import com.renomad.minum.utils.StringUtils;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
-import static minum.utils.SerializationUtils.deserializeHelper;
-import static minum.utils.SerializationUtils.serializeHelper;
+import static com.renomad.minum.utils.SerializationUtils.deserializeHelper;
+import static com.renomad.minum.utils.SerializationUtils.serializeHelper;
 
 /**
  * A record for holding information related to a session. Typically, creation of

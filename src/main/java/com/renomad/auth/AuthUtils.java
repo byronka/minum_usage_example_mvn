@@ -1,12 +1,12 @@
 package com.renomad.auth;
 
-import minum.Constants;
-import minum.Context;
-import minum.database.Db;
-import minum.logging.ILogger;
-import minum.utils.*;
-import minum.web.Request;
-import minum.web.Response;
+import com.renomad.minum.Constants;
+import com.renomad.minum.Context;
+import com.renomad.minum.database.Db;
+import com.renomad.minum.logging.ILogger;
+import com.renomad.minum.utils.*;
+import com.renomad.minum.web.Request;
+import com.renomad.minum.web.Response;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -18,9 +18,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.renomad.auth.RegisterResultStatus.ALREADY_EXISTING_USER;
-import static minum.utils.Invariants.mustBeTrue;
-import static minum.web.StatusLine.StatusCode._303_SEE_OTHER;
-import static minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
+import static com.renomad.minum.utils.Invariants.mustBeTrue;
+import static com.renomad.minum.web.StatusLine.StatusCode._303_SEE_OTHER;
+import static com.renomad.minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
 
 /**
  * This class provides services for stateful authentication and

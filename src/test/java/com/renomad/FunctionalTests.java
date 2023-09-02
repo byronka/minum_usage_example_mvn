@@ -1,19 +1,19 @@
 package com.renomad;
 
-import minum.Context;
-import minum.logging.ILogger;
-import minum.logging.TestLogger;
-import minum.utils.MyThread;
-import minum.web.*;
+import com.renomad.minum.Context;
+import com.renomad.minum.logging.ILogger;
+import com.renomad.minum.logging.TestLogger;
+import com.renomad.minum.utils.MyThread;
+import com.renomad.minum.web.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import static minum.testing.RegexUtils.find;
-import static minum.testing.TestFramework.assertEquals;
-import static minum.testing.TestFramework.assertTrue;
-import static minum.web.StatusLine.StatusCode.*;
+import static com.renomad.minum.testing.RegexUtils.find;
+import static com.renomad.minum.testing.TestFramework.assertEquals;
+import static com.renomad.minum.testing.TestFramework.assertTrue;
+import static com.renomad.minum.web.StatusLine.StatusCode.*;
 
 /**
  * This test is called after the testing framework has started
@@ -29,7 +29,6 @@ public class FunctionalTests {
         this.logger = (TestLogger)context.getLogger();
         this.context = context;
         this.ft = new FunctionalTesting(context);
-        logger.testSuite("FunctionalTests");
     }
 
     public void test() throws Exception {

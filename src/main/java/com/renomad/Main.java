@@ -1,8 +1,8 @@
 package com.renomad;
 
-import minum.Constants;
-import minum.logging.Logger;
-import minum.web.FullSystem;
+import com.renomad.minum.Constants;
+import com.renomad.minum.logging.Logger;
+import com.renomad.minum.web.FullSystem;
 
 public class Main {
 

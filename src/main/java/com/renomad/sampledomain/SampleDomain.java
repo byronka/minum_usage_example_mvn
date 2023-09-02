@@ -1,12 +1,12 @@
 package com.renomad.sampledomain;
 
 import com.renomad.auth.AuthUtils;
-import minum.database.Db;
-import minum.templating.TemplateProcessor;
-import minum.utils.FileUtils;
-import minum.utils.StringUtils;
-import minum.web.Request;
-import minum.web.Response;
+import com.renomad.minum.database.Db;
+import com.renomad.minum.templating.TemplateProcessor;
+import com.renomad.minum.utils.FileUtils;
+import com.renomad.minum.utils.StringUtils;
+import com.renomad.minum.web.Request;
+import com.renomad.minum.web.Response;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-import static minum.web.StatusLine.StatusCode.*;
+import static com.renomad.minum.web.StatusLine.StatusCode.*;
 
 
 public class SampleDomain {
