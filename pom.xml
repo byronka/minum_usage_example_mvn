@@ -14,6 +14,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>20</maven.compiler.source>
     <maven.compiler.target>20</maven.compiler.target>
+    <argLine>--enable-preview</argLine>
   </properties>
 
   <dependencies>
@@ -22,6 +23,13 @@
       <artifactId>minum</artifactId>
       <version>0.1.0</version>
       <scope>compile</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/junit/junit -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -69,6 +77,7 @@
         </plugin>
       </plugins>
     </pluginManagement>
+
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -98,8 +107,14 @@
         <configuration>
           <source>20</source>
           <target>20</target>
+          <useIncrementalCompilation>false</useIncrementalCompilation>
           <compilerArgs>
-            --enable-preview
+            <!-- The output of Xlint is not shown by default, but we activate it for the QA bot
+            to be able to get more warnings -->
+            <arg>-Xlint:all</arg>
+            <!-- Prevents recompilation due to missing package-info.class, see MCOMPILER-205 -->
+            <arg>-Xpkginfo:always</arg>
+            <arg>--enable-preview</arg>
           </compilerArgs>
         </configuration>
       </plugin>
@@ -107,7 +122,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>--enable-preview</argLine>
+
         </configuration>
       </plugin>
       <plugin>
@@ -118,6 +133,91 @@
           <mainClass>com.renomad.Main</mainClass>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.10</version>
+        <executions>
+          <execution>
+            <id>default-prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>default-check</id>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <rule>
+                  <element>BUNDLE</element>
+                  <limits>
+                    <limit>
+                      <counter>COMPLEXITY</counter>
+                      <value>COVEREDRATIO</value>
+                      <minimum>0.60</minimum>
+                    </limit>
+                  </limits>
+                </rule>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.14.4</version>
+        <configuration>
+          <jvmArgs>
+            <jvmArg>--enable-preview</jvmArg>
+          </jvmArgs>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>3.1.2</version>
+        <configuration>
+          <outputDirectory>${basedir}/target/newsite</outputDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <outputDirectory>${basedir}/target/newsite</outputDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <!-- select non-aggregate reports -->
+              <report>report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <outputDirectory>${basedir}/target/newsite</outputDirectory>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
