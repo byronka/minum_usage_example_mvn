@@ -30,8 +30,6 @@ System requirements:
 provides us the [virtual threads](https://openjdk.org/jeps/436) we need (and even so, virtual
 threading is a preview until JDK version 21).
 
-[Maven](https://maven.apache.org/download.cgi) is required. I tested with version 3.9.3
-
 Developed in two environments:
 * MacBook Pro with OS 12.0.1, with OpenJDK 20
 * Windows 10 64-bit professional, on [Cygwin](https://www.cygwin.com/), OpenJDK 20
