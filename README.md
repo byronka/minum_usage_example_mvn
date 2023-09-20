@@ -1,10 +1,9 @@
-Minum example project using Maven
-=================================
+Minum example project
+=====================
 
 This is a simple project meant to demonstrate use of the [Minum framework](https://github.com/byronka/minum).
 A good starting point for reading this code is the [Main](src/main/java/com/renomad/Main.java) and
-[TheRegister](src/main/java/com/renomad/TheRegister.java) class. This example project includes the Minum
-framework as a dependency by Maven.  
+[TheRegister](src/main/java/com/renomad/TheRegister.java) class. 
 
 
 Quick start:
