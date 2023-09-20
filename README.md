@@ -26,33 +26,32 @@ Quick start:
 System requirements: 
 --------------------
 
-[JDK version 20](https://jdk.java.net/20/) is _required_, since it
-provides us the [virtual threads](https://openjdk.org/jeps/436) we need (and even so, virtual
-threading is a preview until JDK version 21).
+[JDK version 21](https://jdk.java.net/21/) is _required_, since it
+provides us the [virtual threads](https://openjdk.org/jeps/436) we need.
 
 Developed in two environments:
-* MacBook Pro with OS 12.0.1, with OpenJDK 20
-* Windows 10 64-bit professional, on [Cygwin](https://www.cygwin.com/), OpenJDK 20
+* MacBook Pro with OS 12.0.1, with OpenJDK 21
+* Windows 10 64-bit professional, on [Cygwin](https://www.cygwin.com/), OpenJDK 21
 
 
 
 Step-by-step guide for installing Java on Windows:
 --------------------------------------------------
 
-1. Download the binary by clicking [here](https://download.java.net/java/GA/jdk20.0.1/b4887098932d415489976708ad6d1a4b/9/GPL/openjdk-20.0.1_windows-x64_bin.zip).
+1. Download the binary by clicking [here](https://jdk.java.net/21/) and selecting the Windows/x64 zip.
 2. Uncompress the zip file
 3. Add the home directory to your path.  The home directory of Java is the one with "bin"
    and "conf" directories, among others. if you, for example, uncompressed the
-   directory to C:\java\jdk-20.0.1, then in Windows you should add it to your path,
+   directory to C:\java\jdk-21, then in Windows you should add it to your path,
    following these instructions:
 
-    * Click the Windows start icon
-    * Type env to get the system properties window
-    * Click on Environment Variables
-    * Under user variables, click the New button
-    * For the variable name, enter JAVA_HOME, and for the value, enter C:\java\jdk-20.0.1
-    * Edit your Path variable, click New, and add %JAVA_HOME%\bin
-   
+* Click the Windows start icon
+* Type `env` to get the system properties window
+* Click on _Environment Variables_
+* Under user variables, click the _New_ button
+* For the variable name, enter `JAVA_HOME`, and for the value, enter `C:\java\jdk-21`
+* Edit your _Path_ variable, click _New_, and add `%JAVA_HOME%\bin`
+
 
 First-time use
 --------------
