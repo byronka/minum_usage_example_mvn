@@ -53,8 +53,8 @@ public class AuthUtils {
         this.logger = context.getLogger();
         this.fileUtils = context.getFileUtils();
 
-        loginPageTemplate = fileUtils.readTextFile("target/classes/templates/auth/login_page_template.html");
-        registerPageTemplate = fileUtils.readTextFile("target/classes/templates/auth/register_page_template.html");
+        loginPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/login_page_template.html");
+        registerPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/register_page_template.html");
     }
 
     public static final String cookieKey = "sessionid";

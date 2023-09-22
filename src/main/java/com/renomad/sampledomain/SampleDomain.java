@@ -28,9 +28,9 @@ public class SampleDomain {
     public SampleDomain(Db<PersonName> diskData, AuthUtils auth, FileUtils fileUtils) {
         this.db = diskData;
         this.auth = auth;
-        nameEntryTemplate = TemplateProcessor.buildProcessor(fileUtils.readTextFile("target/classes/templates/sampledomain/name_entry.html"));
-        authHomepage = fileUtils.readTextFile("target/classes/templates/sampledomain/auth_homepage.html");
-        unauthHomepage = fileUtils.readTextFile("target/classes/templates/sampledomain/unauth_homepage.html");
+        nameEntryTemplate = TemplateProcessor.buildProcessor(fileUtils.readTextFile("src/main/webapp/templates/sampledomain/name_entry.html"));
+        authHomepage = fileUtils.readTextFile("src/main/webapp/templates/sampledomain/auth_homepage.html");
+        unauthHomepage = fileUtils.readTextFile("src/main/webapp/templates/sampledomain/unauth_homepage.html");
     }
 
     public Response formEntry(Request r) {
