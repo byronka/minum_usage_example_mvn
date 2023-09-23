@@ -26,7 +26,7 @@ System requirements:
 --------------------
 
 [JDK version 21](https://jdk.java.net/21/) is _required_, since it
-provides us the [virtual threads](https://openjdk.org/jeps/436) we need.
+provides us the [virtual threads](https://openjdk.org/jeps/444) we need.
 
 Developed in two environments:
 * MacBook Pro with OS 12.0.1, with OpenJDK 21
