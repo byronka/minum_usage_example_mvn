@@ -80,7 +80,7 @@ public class SampleDomain {
      * </p>
      */
     public Response helloName(Request request) {
-        String name = request.startLine().queryString().get("name");
+        String name = request.requestLine().queryString().get("name");
         return Response.htmlOk("hello " + name);
     }
 

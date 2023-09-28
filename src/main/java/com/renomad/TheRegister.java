@@ -4,6 +4,7 @@ import com.renomad.auth.AuthUtils;
 import com.renomad.auth.LoopingSessionReviewing;
 import com.renomad.auth.SessionId;
 import com.renomad.auth.User;
+import com.renomad.minum.web.RequestLine;
 import com.renomad.sampledomain.ListPhotos;
 import com.renomad.sampledomain.PersonName;
 import com.renomad.sampledomain.SampleDomain;
@@ -12,7 +13,6 @@ import com.renomad.sampledomain.photo.Photograph;
 import com.renomad.minum.Context;
 import com.renomad.minum.database.Db;
 import com.renomad.minum.web.Response;
-import com.renomad.minum.web.StartLine;
 import com.renomad.minum.web.WebFramework;
 
 /**
@@ -21,7 +21,7 @@ import com.renomad.minum.web.WebFramework;
  * <br><br>
  * example:
  * <pre>{@code
- *     wf.registerPath(StartLine.Verb.GET, "formentry", sd::formEntry);
+ *     wf.registerPath(RequestLine.Method.GET, "formentry", sd::formEntry);
  * }</pre>
  */
 public class TheRegister {
@@ -41,27 +41,27 @@ public class TheRegister {
         var sd = setupSampleDomain(auth);
 
         // homepage
-        webFramework.registerPath(StartLine.Verb.GET, "", r -> Response.redirectTo("index.html"));
-        webFramework.registerPath(StartLine.Verb.GET, "index", sd::sampleDomainIndex);
+        webFramework.registerPath(RequestLine.Method.GET, "", r -> Response.redirectTo("index.html"));
+        webFramework.registerPath(RequestLine.Method.GET, "index", sd::sampleDomainIndex);
 
         // sample domain stuff
-        webFramework.registerPath(StartLine.Verb.GET, "formentry", sd::formEntry);
-        webFramework.registerPath(StartLine.Verb.POST, "testform", sd::testform);
-        webFramework.registerPath(StartLine.Verb.GET, "hello", sd::helloName);
+        webFramework.registerPath(RequestLine.Method.GET, "formentry", sd::formEntry);
+        webFramework.registerPath(RequestLine.Method.POST, "testform", sd::testform);
+        webFramework.registerPath(RequestLine.Method.GET, "hello", sd::helloName);
 
         // photos stuff
-        webFramework.registerPath(StartLine.Verb.GET, "photos", lp::ListPhotosPage);
-        webFramework.registerPath(StartLine.Verb.GET, "upload", up::uploadPage);
-        webFramework.registerPath(StartLine.Verb.POST, "upload", up::uploadPageReceivePost);
-        webFramework.registerPath(StartLine.Verb.GET, "photo", lp::grabPhoto);
+        webFramework.registerPath(RequestLine.Method.GET, "photos", lp::ListPhotosPage);
+        webFramework.registerPath(RequestLine.Method.GET, "upload", up::uploadPage);
+        webFramework.registerPath(RequestLine.Method.POST, "upload", up::uploadPageReceivePost);
+        webFramework.registerPath(RequestLine.Method.GET, "photo", lp::grabPhoto);
 
         // minum.auth stuff
-        webFramework.registerPath(StartLine.Verb.GET, "login", auth::login);
-        webFramework.registerPath(StartLine.Verb.GET, "register", auth::register);
-        webFramework.registerPath(StartLine.Verb.POST, "registeruser", auth::registerUser);
-        webFramework.registerPath(StartLine.Verb.POST, "loginuser", auth::loginUser);
-        webFramework.registerPath(StartLine.Verb.GET, "logout", auth::logout);
-        webFramework.registerPath(StartLine.Verb.GET, "auth", auth::authPage);
+        webFramework.registerPath(RequestLine.Method.GET, "login", auth::login);
+        webFramework.registerPath(RequestLine.Method.GET, "register", auth::register);
+        webFramework.registerPath(RequestLine.Method.POST, "registeruser", auth::registerUser);
+        webFramework.registerPath(RequestLine.Method.POST, "loginuser", auth::loginUser);
+        webFramework.registerPath(RequestLine.Method.GET, "logout", auth::logout);
+        webFramework.registerPath(RequestLine.Method.GET, "auth", auth::authPage);
 
     }
 
