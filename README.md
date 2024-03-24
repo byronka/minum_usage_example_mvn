@@ -14,6 +14,9 @@ Quick start:
 ```shell
 ./mvnw compile exec:java
 ```
+then visit http://localhost:8080
+
+Press ctrl+c to stop.
 
 * To test:
 

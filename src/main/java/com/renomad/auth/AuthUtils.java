@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 
 import static com.renomad.auth.RegisterResultStatus.ALREADY_EXISTING_USER;
 import static com.renomad.minum.utils.Invariants.mustBeTrue;
-import static com.renomad.minum.web.StatusLine.StatusCode._303_SEE_OTHER;
-import static com.renomad.minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
+import static com.renomad.minum.web.StatusLine.StatusCode.CODE_303_SEE_OTHER;
+import static com.renomad.minum.web.StatusLine.StatusCode.CODE_401_UNAUTHORIZED;
 
 /**
  * This class provides services for stateful authentication and
@@ -90,7 +90,7 @@ public class AuthUtils {
         // extract session identifiers from the cookies
         final var cookieMatcher = AuthUtils.sessionIdCookieRegex.matcher(cookieHeaders);
         final var listOfSessionIds = new ArrayList<String>();
-        for(int i = 0; cookieMatcher.find() && i < constants.MOST_COOKIES_WELL_LOOK_THROUGH; i++) {
+        for(int i = 0; cookieMatcher.find() && i < constants.mostCookiesWellLookThrough; i++) {
             final var sessionIdValue = cookieMatcher.group("sessionIdValue");
             listOfSessionIds.add(sessionIdValue);
         }
@@ -157,7 +157,7 @@ public class AuthUtils {
 
         // create details of the new user (the one who has a session)
         final User updatedUser = new User(user.getId(), user.getUsername(), user.getHashedPassword(), user.getSalt(), newSession.getSessionCode());
-        userDiskData.update(updatedUser);
+        userDiskData.write(updatedUser);
 
         return new NewSessionResult(newSession, updatedUser);
     }
@@ -216,7 +216,6 @@ public class AuthUtils {
 
         sessionDiskData.delete(userSession.get(0));
 
-        userDiskData.delete(user);
         final User updatedUser = new User(user.getId(), user.getUsername(), user.getHashedPassword(), user.getSalt(), null);
         userDiskData.write(updatedUser);
 
@@ -225,7 +224,7 @@ public class AuthUtils {
 
 
     public Response loginUser(Request r) {
-        String hostname = constants.HOST_NAME;
+        String hostname = constants.hostName;
         if (processAuth(r).isAuthenticated()) {
             Response.redirectTo("photos");
         }
@@ -236,12 +235,12 @@ public class AuthUtils {
 
         switch (loginResult.status()) {
             case SUCCESS -> {
-                return new Response(_303_SEE_OTHER, Map.of(
+                return new Response(CODE_303_SEE_OTHER, Map.of(
                         "Location","index.html",
                         "Set-Cookie","%s=%s; Secure; HttpOnly; Domain=%s".formatted(cookieKey, loginResult.user().getCurrentSession(), hostname)));
             }
             default -> {
-                return new Response(_401_UNAUTHORIZED,
+                return new Response(CODE_401_UNAUTHORIZED,
                         """
                         Invalid account credentials. <a href="index.html">Index</a>
                         """,
@@ -262,7 +261,7 @@ public class AuthUtils {
     public Response registerUser(Request r) {
         final var authResult = processAuth(r);
         if (authResult.isAuthenticated()) {
-            return new Response(_303_SEE_OTHER, Map.of("Location","index"));
+            return new Response(CODE_303_SEE_OTHER, Map.of("Location","index"));
         }
 
         final var username = r.body().asString("username");
@@ -270,9 +269,9 @@ public class AuthUtils {
         final var registrationResult = registerUser(username, password);
 
         if (registrationResult.status() == ALREADY_EXISTING_USER) {
-            return new Response(_401_UNAUTHORIZED, "<p>This user is already registered</p><p><a href=\"index.html\">Index</a></p>", Map.of("content-type","text/html"));
+            return new Response(CODE_401_UNAUTHORIZED, "<p>This user is already registered</p><p><a href=\"index.html\">Index</a></p>", Map.of("content-type","text/html"));
         }
-        return new Response(_303_SEE_OTHER, Map.of("Location","login"));
+        return new Response(CODE_303_SEE_OTHER, Map.of("Location","login"));
 
     }
 

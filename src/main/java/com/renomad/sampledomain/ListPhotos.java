@@ -38,7 +38,7 @@ public class ListPhotos {
     public ListPhotos(Context context, UploadPhoto up, AuthUtils auth) {
         this.logger = context.getLogger();
         this.constants = context.getConstants();
-        this.dbDir = Path.of(constants.DB_DIRECTORY);
+        this.dbDir = Path.of(constants.dbDirectory);
         listPhotosTemplateProcessor = TemplateProcessor.buildProcessor(context.getFileUtils().readTextFile("src/main/webapp/templates/listphotos/list_photos_template.html"));
         this.up = up;
         this.auth = auth;
@@ -74,13 +74,13 @@ public class ListPhotos {
 
         // if the name query is null or blank, return 404
         if (filename == null || filename.isBlank()) {
-            return new Response(_404_NOT_FOUND);
+            return new Response(CODE_404_NOT_FOUND);
         }
 
         // first, is it already in our cache?
         if (lruCache.containsKey(filename)) {
             logger.logDebug(() -> "Found " + filename + " in the cache. Serving.");
-            return new Response(_200_OK, lruCache.get(filename),
+            return new Response(CODE_200_OK, lruCache.get(filename),
                     Map.of(
                             "Cache-Control","max-age=604800",
                             "Content-Type","image/jpeg"
@@ -93,7 +93,7 @@ public class ListPhotos {
         // if it's not there, return 404
         if (! doesFileExist) {
             logger.logDebug(() -> "filename of " + filename + " does not exist in the directory");
-            return new Response(_404_NOT_FOUND);
+            return new Response(CODE_404_NOT_FOUND);
         }
 
         // otherwise, read the bytes
@@ -117,7 +117,7 @@ public class ListPhotos {
             byte[] bytes = out.toByteArray();
             if (bytes.length == 0) {
                 logger.logDebug(() -> filename + " photo filesize was 0.  Sending 404");
-                return new Response(_404_NOT_FOUND);
+                return new Response(CODE_404_NOT_FOUND);
             } else {
                 String s = filename + "photo filesize was " + bytes.length + " bytes.";
                 logger.logDebug(() -> s);
@@ -125,7 +125,7 @@ public class ListPhotos {
                 logger.logDebug(() -> "Storing " + filename + " in the cache");
                 lruCache.put(filename, bytes);
 
-                return new Response(_200_OK, bytes,
+                return new Response(CODE_200_OK, bytes,
                         Map.of(
                                 "Cache-Control","max-age=604800",
                                 "Content-Type","image/jpeg"
@@ -134,7 +134,7 @@ public class ListPhotos {
             }
         } catch (IOException e){
             logger.logAsyncError(() -> "There was an issue reading a file at " + photoPath + ". " + StacktraceUtils.stackTraceToString(e));
-            return new Response(_500_INTERNAL_SERVER_ERROR);
+            return new Response(CODE_500_INTERNAL_SERVER_ERROR);
         }
 
 

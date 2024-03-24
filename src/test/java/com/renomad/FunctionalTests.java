@@ -1,5 +1,6 @@
 package com.renomad;
 
+import com.renomad.minum.Constants;
 import com.renomad.minum.Context;
 import com.renomad.minum.logging.ILogger;
 import com.renomad.minum.logging.TestLogger;
@@ -29,48 +30,48 @@ public class FunctionalTests {
     private static FunctionalTesting ft;
 
     @BeforeClass
-    public static void init() throws IOException {
+    public static void init() {
         context = buildTestingContext("_integration_test");
         new FullSystem(context).start();
         new TheRegister(context).registerDomains();
         logger = (TestLogger) context.getLogger();
-        context = context;
-        ft = new FunctionalTesting(context);
+        Constants constants = context.getConstants();
+        ft = new FunctionalTesting(context, constants.hostName, constants.serverPort);
     }
 
     @AfterClass
-    public static void cleanup() throws IOException {
+    public static void cleanup() {
         // delay a sec so our system has time to finish before we start deleting files
         MyThread.sleep(500);
-        context.getFileUtils().deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().DB_DIRECTORY), context.getLogger());
+        context.getFileUtils().deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().dbDirectory), context.getLogger());
         var fs = context.getFullSystem();
-        fs.close();
+        fs.shutdown();
         context.getLogger().stop();
         context.getExecutorService().shutdownNow();
     }
 
     @Test
-    public void test() throws Exception {
+    public void test() {
         logger.test("Check we can customize mime types");
         context.getFullSystem().getWebFramework().addMimeForSuffix(".png", "image/png");
 
         /* Request a static png image that needed a mime type we just provided */
-        assertEquals(ft.get("moon.png").statusLine().status(), _200_OK);
+        assertEquals(ft.get("moon.png").statusLine().status(), CODE_200_OK);
         assertEquals(ft.get("moon.png").headers().valueByKey("content-type"), List.of("image/png"));
 
         logger.test("grab the photos page unauthenticated. We should be able to view the photos.");
-        assertEquals(ft.get("photos").statusLine().status(), _200_OK);
+        assertEquals(ft.get("photos").statusLine().status(), CODE_200_OK);
 
         logger.test("go to the page for registering a user, while unauthenticated.");
-        assertEquals(ft.get("register").statusLine().status(), _200_OK);
+        assertEquals(ft.get("register").statusLine().status(), CODE_200_OK);
 
         logger.test("register a user");
         var registrationResponse = ft.post("registeruser", "username=foo&password=bar");
-        assertEquals(registrationResponse.statusLine().status(), _303_SEE_OTHER);
+        assertEquals(registrationResponse.statusLine().status(), CODE_303_SEE_OTHER);
         assertEquals(registrationResponse.headers().valueByKey("location"), List.of("login"));
 
         logger.test("Go to the login page, unauthenticated");
-        assertEquals(ft.get("login").statusLine().status(), _200_OK);
+        assertEquals(ft.get("login").statusLine().status(), CODE_200_OK);
 
         logger.test("login as the user we registered");
         var response = ft.post("loginuser", "username=foo&password=bar");
@@ -79,11 +80,11 @@ public class FunctionalTests {
         logger.test("try visiting the registration page while authenticated (should get redirected)");
         List<String> authHeader = List.of("Cookie: " + cookieValue);
         var registrationResponseAuthd = ft.post("registeruser", "username=foo&password=bar", authHeader);
-        assertEquals(registrationResponseAuthd.statusLine().status(), _303_SEE_OTHER);
+        assertEquals(registrationResponseAuthd.statusLine().status(), CODE_303_SEE_OTHER);
         assertEquals(registrationResponseAuthd.headers().valueByKey("location"), List.of("index"));
 
         logger.test("try visiting the login page while authenticated (should get redirected)");
-        assertEquals(ft.get("login", authHeader).statusLine().status(), _303_SEE_OTHER);
+        assertEquals(ft.get("login", authHeader).statusLine().status(), CODE_303_SEE_OTHER);
 
         logger.test("visit the page for uploading photos, authenticated");
         ft.get("upload", authHeader);
@@ -102,27 +103,26 @@ public class FunctionalTests {
         logger.test("check out what's on the sample domain page, authenticated");
         assertTrue(ft.get("index", authHeader).body().asString().contains("Enter a name"));
         assertTrue(ft.get("formEntry", authHeader).body().asString().contains("Name Entry"));
-        assertEquals(ft.post("testform", "name_entry=abc", authHeader).statusLine().status(), _303_SEE_OTHER);
+        assertEquals(ft.post("testform", "name_entry=abc", authHeader).statusLine().status(), CODE_303_SEE_OTHER);
 
         logger.test("logout");
-        assertEquals(ft.get("logout", authHeader).statusLine().status(), _303_SEE_OTHER);
+        assertEquals(ft.get("logout", authHeader).statusLine().status(), CODE_303_SEE_OTHER);
 
         logger.test("if we try to upload a photo unauth, we're prevented");
-        assertEquals(ft.post("upload", "foo=bar").statusLine().status(), _401_UNAUTHORIZED);
+        assertEquals(ft.post("upload", "foo=bar").statusLine().status(), CODE_401_UNAUTHORIZED);
 
         logger.test("if we try to upload a name on the sampledomain auth, we're prevented");
-        assertEquals(ft.post("testform", "foo=bar").statusLine().status(), _401_UNAUTHORIZED);
+        assertEquals(ft.post("testform", "foo=bar").statusLine().status(), CODE_401_UNAUTHORIZED);
 
         // *********** ERROR HANDLING SECTION *****************
 
         logger.test("if we try sending too many characters on a line, it should block us");
-        ft.get("a".repeat(context.getConstants().MAX_READ_LINE_SIZE_BYTES + 1));
+        ft.get("a".repeat(context.getConstants().maxReadLineSizeBytes + 1));
 
         // remember, we're the client, we don't have immediate access to the server here.  So,
         // we have to wait for it to get through some processing before we check.
         MyThread.sleep(50);
-        String failureMsg = ((TestLogger)logger).findFirstMessageThatContains("in readLine", 15);
-        assertTrue(failureMsg.contains("in readLine, client sent more bytes than allowed.  Current max: "));
+        assertTrue(logger.doesMessageExist("127.0.0.1 is looking for vulnerabilities, for this: client sent more bytes than allowed for a single line"));
 
     }
 

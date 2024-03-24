@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.renomad.minum.web.StatusLine.StatusCode._401_UNAUTHORIZED;
-import static com.renomad.minum.web.StatusLine.StatusCode._500_INTERNAL_SERVER_ERROR;
+import static com.renomad.minum.web.StatusLine.StatusCode.CODE_401_UNAUTHORIZED;
+import static com.renomad.minum.web.StatusLine.StatusCode.CODE_500_INTERNAL_SERVER_ERROR;
 
 
 public class UploadPhoto {
@@ -36,7 +36,7 @@ public class UploadPhoto {
         this.constants = context.getConstants();
         this.auth = auth;
         this.logger = context.getLogger();
-        this.dbDir = Path.of(constants.DB_DIRECTORY);
+        this.dbDir = Path.of(constants.dbDirectory);
 
         uploadPhotoTemplateHtml = context.getFileUtils().readTextFile("src/main/webapp/templates/uploadphoto/upload_photo_template.html");
         this.db = db;
@@ -45,7 +45,7 @@ public class UploadPhoto {
     public Response uploadPage(Request r) {
         AuthResult authResult = auth.processAuth(r);
         if (! authResult.isAuthenticated()) {
-            return new Response(_401_UNAUTHORIZED);
+            return new Response(CODE_401_UNAUTHORIZED);
         }
         return Response.htmlOk(uploadPhotoTemplateHtml);
     }
@@ -53,7 +53,7 @@ public class UploadPhoto {
     public Response uploadPageReceivePost(Request request) {
         AuthResult authResult = auth.processAuth(request);
         if (! authResult.isAuthenticated()) {
-            return new Response(_401_UNAUTHORIZED);
+            return new Response(CODE_401_UNAUTHORIZED);
         }
         var photoBytes = request.body().asBytes("image_uploads");
         var shortDescription = request.body().asString("short_description");
@@ -76,7 +76,7 @@ public class UploadPhoto {
             Files.write(photoPath, photoBytes);
         } catch (IOException e) {
             logger.logAsyncError(() -> StacktraceUtils.stackTraceToString(e));
-            return new Response(_500_INTERNAL_SERVER_ERROR, e.toString());
+            return new Response(CODE_500_INTERNAL_SERVER_ERROR, e.toString());
         }
         db.write(newPhotograph);
         return Response.redirectTo("photos");
