@@ -1,7 +1,7 @@
 package com.renomad.auth;
 
-import com.renomad.minum.Constants;
-import com.renomad.minum.Context;
+import com.renomad.minum.state.Constants;
+import com.renomad.minum.state.Context;
 import com.renomad.minum.database.Db;
 import com.renomad.minum.logging.ILogger;
 import com.renomad.minum.utils.*;
@@ -51,7 +51,7 @@ public class AuthUtils {
         emptyUser = User.EMPTY;
         emptySessionId = SessionId.EMPTY;
         this.logger = context.getLogger();
-        this.fileUtils = context.getFileUtils();
+        this.fileUtils = new FileUtils(context.getLogger(), context.getConstants());
 
         loginPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/login_page_template.html");
         registerPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/register_page_template.html");

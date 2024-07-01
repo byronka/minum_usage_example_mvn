@@ -1,9 +1,10 @@
 package com.renomad;
 
-import com.renomad.minum.Constants;
-import com.renomad.minum.Context;
+import com.renomad.minum.state.Constants;
+import com.renomad.minum.state.Context;
 import com.renomad.minum.logging.ILogger;
 import com.renomad.minum.logging.TestLogger;
+import com.renomad.minum.utils.FileUtils;
 import com.renomad.minum.utils.MyThread;
 import com.renomad.minum.web.*;
 import org.junit.AfterClass;
@@ -43,7 +44,7 @@ public class FunctionalTests {
     public static void cleanup() {
         // delay a sec so our system has time to finish before we start deleting files
         MyThread.sleep(500);
-        context.getFileUtils().deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().dbDirectory), context.getLogger());
+        new FileUtils(context.getLogger(), context.getConstants()).deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().dbDirectory), context.getLogger());
         var fs = context.getFullSystem();
         fs.shutdown();
         context.getLogger().stop();

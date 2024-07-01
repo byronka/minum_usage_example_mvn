@@ -1,7 +1,7 @@
 package com.renomad.sampledomain;
 
-import com.renomad.minum.Constants;
-import com.renomad.minum.Context;
+import com.renomad.minum.state.Constants;
+import com.renomad.minum.state.Context;
 import com.renomad.auth.AuthResult;
 import com.renomad.auth.AuthUtils;
 import com.renomad.minum.database.Db;
@@ -38,7 +38,7 @@ public class UploadPhoto {
         this.logger = context.getLogger();
         this.dbDir = Path.of(constants.dbDirectory);
 
-        uploadPhotoTemplateHtml = context.getFileUtils().readTextFile("src/main/webapp/templates/uploadphoto/upload_photo_template.html");
+        uploadPhotoTemplateHtml = new FileUtils(context.getLogger(), context.getConstants()).readTextFile("src/main/webapp/templates/uploadphoto/upload_photo_template.html");
         this.db = db;
     }
 

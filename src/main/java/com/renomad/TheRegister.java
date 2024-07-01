@@ -4,13 +4,14 @@ import com.renomad.auth.AuthUtils;
 import com.renomad.auth.LoopingSessionReviewing;
 import com.renomad.auth.SessionId;
 import com.renomad.auth.User;
+import com.renomad.minum.utils.FileUtils;
 import com.renomad.minum.web.RequestLine;
 import com.renomad.sampledomain.ListPhotos;
 import com.renomad.sampledomain.PersonName;
 import com.renomad.sampledomain.SampleDomain;
 import com.renomad.sampledomain.UploadPhoto;
 import com.renomad.sampledomain.photo.Photograph;
-import com.renomad.minum.Context;
+import com.renomad.minum.state.Context;
 import com.renomad.minum.database.Db;
 import com.renomad.minum.web.Response;
 import com.renomad.minum.web.WebFramework;
@@ -67,7 +68,7 @@ public class TheRegister {
 
     private SampleDomain setupSampleDomain(AuthUtils auth) {
         Db<PersonName> sampleDomainDb = context.getDb("names", PersonName.EMPTY);
-        return new SampleDomain(sampleDomainDb, auth, context.getFileUtils());
+        return new SampleDomain(sampleDomainDb, auth, new FileUtils(context.getLogger(), context.getConstants()));
     }
 
     private ListPhotos setupListPhotos(AuthUtils auth, UploadPhoto up) {
