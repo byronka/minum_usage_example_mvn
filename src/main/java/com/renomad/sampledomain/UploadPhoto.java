@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -45,7 +46,7 @@ public class UploadPhoto {
     public Response uploadPage(Request r) {
         AuthResult authResult = auth.processAuth(r);
         if (! authResult.isAuthenticated()) {
-            return new Response(CODE_401_UNAUTHORIZED);
+            return Response.buildLeanResponse(CODE_401_UNAUTHORIZED);
         }
         return Response.htmlOk(uploadPhotoTemplateHtml);
     }
@@ -53,7 +54,7 @@ public class UploadPhoto {
     public Response uploadPageReceivePost(Request request) {
         AuthResult authResult = auth.processAuth(request);
         if (! authResult.isAuthenticated()) {
-            return new Response(CODE_401_UNAUTHORIZED);
+            return Response.buildLeanResponse(CODE_401_UNAUTHORIZED);
         }
         var photoBytes = request.body().asBytes("image_uploads");
         var shortDescription = request.body().asString("short_description");
@@ -76,7 +77,7 @@ public class UploadPhoto {
             Files.write(photoPath, photoBytes);
         } catch (IOException e) {
             logger.logAsyncError(() -> StacktraceUtils.stackTraceToString(e));
-            return new Response(CODE_500_INTERNAL_SERVER_ERROR, e.toString());
+            return Response.buildResponse(CODE_500_INTERNAL_SERVER_ERROR, Map.of("Content-Type", "text/plain"), e.toString());
         }
         db.write(newPhotograph);
         return Response.redirectTo("photos");

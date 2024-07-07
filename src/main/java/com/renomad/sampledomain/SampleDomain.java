@@ -36,7 +36,7 @@ public class SampleDomain {
     public Response formEntry(Request r) {
         final var authResult = auth.processAuth(r);
         if (! authResult.isAuthenticated()) {
-            return new Response(CODE_401_UNAUTHORIZED);
+            return Response.buildLeanResponse(CODE_401_UNAUTHORIZED);
         }
         final String names = db
                 .values().stream().sorted(Comparator.comparingLong(PersonName::getIndex))
@@ -49,13 +49,13 @@ public class SampleDomain {
     public Response testform(Request r) {
         final var authResult = auth.processAuth(r);
         if (! authResult.isAuthenticated()) {
-            return new Response(CODE_401_UNAUTHORIZED);
+            return Response.buildLeanResponse(CODE_401_UNAUTHORIZED);
         }
 
         final var nameEntry = r.body().asString("name_entry");
 
         db.write(new PersonName(0L, nameEntry));
-        return new Response(CODE_303_SEE_OTHER, Map.of("Location","formentry"));
+        return Response.buildLeanResponse(CODE_303_SEE_OTHER, Map.of("Location","formentry"));
     }
 
     /**

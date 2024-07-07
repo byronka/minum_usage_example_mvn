@@ -74,17 +74,18 @@ public class ListPhotos {
 
         // if the name query is null or blank, return 404
         if (filename == null || filename.isBlank()) {
-            return new Response(CODE_404_NOT_FOUND);
+            return Response.buildLeanResponse(CODE_404_NOT_FOUND);
         }
 
         // first, is it already in our cache?
         if (lruCache.containsKey(filename)) {
             logger.logDebug(() -> "Found " + filename + " in the cache. Serving.");
-            return new Response(CODE_200_OK, lruCache.get(filename),
+            return Response.buildResponse(CODE_200_OK,
                     Map.of(
                             "Cache-Control","max-age=604800",
                             "Content-Type","image/jpeg"
-                    ));
+                    ),
+                    lruCache.get(filename));
         }
         // first let's check to see whether the file is even there.
         Path photoPath = dbDir.resolve("photo_files").resolve(filename);
@@ -93,7 +94,7 @@ public class ListPhotos {
         // if it's not there, return 404
         if (! doesFileExist) {
             logger.logDebug(() -> "filename of " + filename + " does not exist in the directory");
-            return new Response(CODE_404_NOT_FOUND);
+            return Response.buildLeanResponse(CODE_404_NOT_FOUND);
         }
 
         // otherwise, read the bytes
@@ -117,7 +118,7 @@ public class ListPhotos {
             byte[] bytes = out.toByteArray();
             if (bytes.length == 0) {
                 logger.logDebug(() -> filename + " photo filesize was 0.  Sending 404");
-                return new Response(CODE_404_NOT_FOUND);
+                return Response.buildLeanResponse(CODE_404_NOT_FOUND);
             } else {
                 String s = filename + "photo filesize was " + bytes.length + " bytes.";
                 logger.logDebug(() -> s);
@@ -125,16 +126,17 @@ public class ListPhotos {
                 logger.logDebug(() -> "Storing " + filename + " in the cache");
                 lruCache.put(filename, bytes);
 
-                return new Response(CODE_200_OK, bytes,
+                return Response.buildResponse(CODE_200_OK,
                         Map.of(
                                 "Cache-Control","max-age=604800",
                                 "Content-Type","image/jpeg"
-                        ));
+                        ),
+                        bytes);
 
             }
         } catch (IOException e){
             logger.logAsyncError(() -> "There was an issue reading a file at " + photoPath + ". " + StacktraceUtils.stackTraceToString(e));
-            return new Response(CODE_500_INTERNAL_SERVER_ERROR);
+            return Response.buildLeanResponse(CODE_500_INTERNAL_SERVER_ERROR);
         }
 
 

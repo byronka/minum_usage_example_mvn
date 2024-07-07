@@ -235,16 +235,16 @@ public class AuthUtils {
 
         switch (loginResult.status()) {
             case SUCCESS -> {
-                return new Response(CODE_303_SEE_OTHER, Map.of(
+                return Response.buildLeanResponse(CODE_303_SEE_OTHER, Map.of(
                         "Location","index.html",
                         "Set-Cookie","%s=%s; Secure; HttpOnly; Domain=%s".formatted(cookieKey, loginResult.user().getCurrentSession(), hostname)));
             }
             default -> {
-                return new Response(CODE_401_UNAUTHORIZED,
+                return Response.buildResponse(CODE_401_UNAUTHORIZED,
+                        Map.of("Content-Type","text/html"),
                         """
                         Invalid account credentials. <a href="index.html">Index</a>
-                        """,
-                        Map.of("Content-Type","text/html"));
+                        """);
             }
         }
     }
@@ -261,7 +261,7 @@ public class AuthUtils {
     public Response registerUser(Request r) {
         final var authResult = processAuth(r);
         if (authResult.isAuthenticated()) {
-            return new Response(CODE_303_SEE_OTHER, Map.of("Location","index"));
+            return Response.buildLeanResponse(CODE_303_SEE_OTHER, Map.of("Location","index"));
         }
 
         final var username = r.body().asString("username");
@@ -269,9 +269,9 @@ public class AuthUtils {
         final var registrationResult = registerUser(username, password);
 
         if (registrationResult.status() == ALREADY_EXISTING_USER) {
-            return new Response(CODE_401_UNAUTHORIZED, "<p>This user is already registered</p><p><a href=\"index.html\">Index</a></p>", Map.of("content-type","text/html"));
+            return Response.buildResponse(CODE_401_UNAUTHORIZED, Map.of("content-type","text/html"), "<p>This user is already registered</p><p><a href=\"index.html\">Index</a></p>");
         }
-        return new Response(CODE_303_SEE_OTHER, Map.of("Location","login"));
+        return Response.buildLeanResponse(CODE_303_SEE_OTHER, Map.of("Location","login"));
 
     }
 
