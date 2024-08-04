@@ -2,7 +2,6 @@ package com.renomad;
 
 import com.renomad.minum.state.Constants;
 import com.renomad.minum.state.Context;
-import com.renomad.minum.logging.ILogger;
 import com.renomad.minum.logging.TestLogger;
 import com.renomad.minum.utils.FileUtils;
 import com.renomad.minum.utils.MyThread;
@@ -11,8 +10,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -56,7 +53,7 @@ public class FunctionalTests {
         logger.test("Check we can customize mime types");
         context.getFullSystem().getWebFramework().addMimeForSuffix(".png", "image/png");
 
-        /* Request a static png image that needed a mime type we just provided */
+        /* IRequest a static png image that needed a mime type we just provided */
         assertEquals(ft.get("moon.png").statusLine().status(), CODE_200_OK);
         assertEquals(ft.get("moon.png").headers().valueByKey("content-type"), List.of("image/png"));
 
@@ -118,7 +115,7 @@ public class FunctionalTests {
         // *********** ERROR HANDLING SECTION *****************
 
         logger.test("if we try sending too many characters on a line, it should block us");
-        ft.get("a".repeat(context.getConstants().maxReadLineSizeBytes + 1));
+        ft.get("a".repeat(InputStreamUtils.MAX_READ_LINE_SIZE_BYTES + 1));
 
         // remember, we're the client, we don't have immediate access to the server here.  So,
         // we have to wait for it to get through some processing before we check.

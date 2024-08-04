@@ -6,11 +6,10 @@ import com.renomad.auth.AuthResult;
 import com.renomad.auth.AuthUtils;
 import com.renomad.minum.database.Db;
 import com.renomad.minum.logging.ILogger;
+import com.renomad.minum.web.*;
 import com.renomad.sampledomain.photo.Photograph;
 import com.renomad.minum.utils.FileUtils;
 import com.renomad.minum.utils.StacktraceUtils;
-import com.renomad.minum.web.Request;
-import com.renomad.minum.web.Response;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +17,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static com.renomad.minum.web.StatusLine.StatusCode.CODE_401_UNAUTHORIZED;
 import static com.renomad.minum.web.StatusLine.StatusCode.CODE_500_INTERNAL_SERVER_ERROR;
@@ -43,7 +41,7 @@ public class UploadPhoto {
         this.db = db;
     }
 
-    public Response uploadPage(Request r) {
+    public IResponse uploadPage(IRequest r) {
         AuthResult authResult = auth.processAuth(r);
         if (! authResult.isAuthenticated()) {
             return Response.buildLeanResponse(CODE_401_UNAUTHORIZED);
@@ -51,14 +49,15 @@ public class UploadPhoto {
         return Response.htmlOk(uploadPhotoTemplateHtml);
     }
 
-    public Response uploadPageReceivePost(Request request) {
+    public IResponse uploadPageReceivePost(IRequest request) {
         AuthResult authResult = auth.processAuth(request);
         if (! authResult.isAuthenticated()) {
             return Response.buildLeanResponse(CODE_401_UNAUTHORIZED);
         }
-        var photoBytes = request.body().asBytes("image_uploads");
-        var shortDescription = request.body().asString("short_description");
-        var description = request.body().asString("long_description");
+        Body body = request.getBody();
+        var photoBytes = body.getPartitionByName("image_uploads").getFirst().getContent();
+        var shortDescription = body.getPartitionByName("short_description").getFirst().getContentAsString();
+        var description = body.getPartitionByName("long_description").getFirst().getContentAsString();
 
         var newFilename = UUID.nameUUIDFromBytes(photoBytes).toString();
         final var newPhotograph = new Photograph(0, newFilename, shortDescription, description);

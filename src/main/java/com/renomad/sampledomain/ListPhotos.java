@@ -8,7 +8,8 @@ import com.renomad.minum.templating.TemplateProcessor;
 import com.renomad.minum.utils.FileUtils;
 import com.renomad.minum.utils.LRUCache;
 import com.renomad.minum.utils.StacktraceUtils;
-import com.renomad.minum.web.Request;
+import com.renomad.minum.web.IRequest;
+import com.renomad.minum.web.IResponse;
 import com.renomad.minum.web.Response;
 
 import java.io.ByteArrayOutputStream;
@@ -18,7 +19,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,7 +45,7 @@ public class ListPhotos {
         this.lruCache = LRUCache.getLruCache();
     }
 
-    public Response ListPhotosPage(Request r) {
+    public IResponse ListPhotosPage(IRequest r) {
 
         String photoHtml = up.getPhotographs().stream().map(x ->
         """
@@ -68,9 +68,9 @@ public class ListPhotos {
     /**
      * Like you would think - a way to read a photo from disk to put on the wire
      */
-    public Response grabPhoto(Request r) {
-        String filename = r.requestLine().queryString().get("name");
-        logger.logAudit(() -> r.remoteRequester() + " is looking for a photo named " + filename);
+    public IResponse grabPhoto(IRequest r) {
+        String filename = r.getRequestLine().queryString().get("name");
+        logger.logAudit(() -> r.getRemoteRequester() + " is looking for a photo named " + filename);
 
         // if the name query is null or blank, return 404
         if (filename == null || filename.isBlank()) {

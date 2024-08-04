@@ -1,7 +1,5 @@
 package com.renomad;
 
-import com.renomad.minum.state.Constants;
-import com.renomad.minum.logging.Logger;
 import com.renomad.minum.web.FullSystem;
 
 public class Main {

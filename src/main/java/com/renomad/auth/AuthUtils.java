@@ -5,7 +5,8 @@ import com.renomad.minum.state.Context;
 import com.renomad.minum.database.Db;
 import com.renomad.minum.logging.ILogger;
 import com.renomad.minum.utils.*;
-import com.renomad.minum.web.Request;
+import com.renomad.minum.web.IRequest;
+import com.renomad.minum.web.IResponse;
 import com.renomad.minum.web.Response;
 
 import java.time.ZonedDateTime;
@@ -13,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -77,9 +77,9 @@ public class AuthUtils {
      * <li>etc...</li>
      * </ol>
      */
-    public AuthResult processAuth(Request request) {
+    public AuthResult processAuth(IRequest request) {
         // grab the headers from the request.
-        final var headers = request.headers().getHeaderStrings();
+        final var headers = request.getHeaders().getHeaderStrings();
 
         // get all the headers that start with "cookie", case-insensitive
         final var cookieHeaders = headers.stream()
@@ -90,7 +90,7 @@ public class AuthUtils {
         // extract session identifiers from the cookies
         final var cookieMatcher = AuthUtils.sessionIdCookieRegex.matcher(cookieHeaders);
         final var listOfSessionIds = new ArrayList<String>();
-        for(int i = 0; cookieMatcher.find() && i < constants.mostCookiesWellLookThrough; i++) {
+        for(int i = 0; cookieMatcher.find() && i < 5; i++) {
             final var sessionIdValue = cookieMatcher.group("sessionIdValue");
             listOfSessionIds.add(sessionIdValue);
         }
@@ -223,14 +223,14 @@ public class AuthUtils {
     }
 
 
-    public Response loginUser(Request r) {
+    public IResponse loginUser(IRequest r) {
         String hostname = constants.hostName;
         if (processAuth(r).isAuthenticated()) {
             Response.redirectTo("photos");
         }
 
-        final var username = r.body().asString("username");
-        final var password = r.body().asString("password");
+        final var username = r.getBody().asString("username");
+        final var password = r.getBody().asString("password");
         final var loginResult = loginUser(username, password);
 
         switch (loginResult.status()) {
@@ -249,7 +249,7 @@ public class AuthUtils {
         }
     }
 
-    public Response login(Request request) {
+    public IResponse login(IRequest request) {
         AuthResult authResult = processAuth(request);
         if (authResult.isAuthenticated()) {
             return Response.redirectTo("auth");
@@ -258,14 +258,14 @@ public class AuthUtils {
     }
 
 
-    public Response registerUser(Request r) {
+    public IResponse registerUser(IRequest r) {
         final var authResult = processAuth(r);
         if (authResult.isAuthenticated()) {
             return Response.buildLeanResponse(CODE_303_SEE_OTHER, Map.of("Location","index"));
         }
 
-        final var username = r.body().asString("username");
-        final var password = r.body().asString("password");
+        final var username = r.getBody().asString("username");
+        final var password = r.getBody().asString("password");
         final var registrationResult = registerUser(username, password);
 
         if (registrationResult.status() == ALREADY_EXISTING_USER) {
@@ -275,7 +275,7 @@ public class AuthUtils {
 
     }
 
-    public Response register(Request request) {
+    public IResponse register(IRequest request) {
         AuthResult authResult = processAuth(request);
         if (authResult.isAuthenticated()) {
             Response.redirectTo("auth");
@@ -283,7 +283,7 @@ public class AuthUtils {
         return Response.htmlOk(registerPageTemplate);
     }
 
-    public Response logout(Request request) {
+    public IResponse logout(IRequest request) {
         final var authResult = processAuth(request);
         if (authResult.isAuthenticated()) {
             logoutUser(authResult.user());
@@ -292,7 +292,7 @@ public class AuthUtils {
         return Response.redirectTo("index.html");
     }
 
-    public Response authPage(Request request) {
+    public IResponse authPage(IRequest request) {
         String response;
         if (processAuth(request).isAuthenticated()) {
             response = """
