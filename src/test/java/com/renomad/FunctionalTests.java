@@ -41,7 +41,7 @@ public class FunctionalTests {
     public static void cleanup() {
         // delay a sec so our system has time to finish before we start deleting files
         MyThread.sleep(500);
-        new FileUtils(context.getLogger(), context.getConstants()).deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().dbDirectory), context.getLogger());
+        new FileUtils(context.getLogger(), context.getConstants()).deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().dbDirectory));
         var fs = context.getFullSystem();
         fs.shutdown();
         context.getLogger().stop();
