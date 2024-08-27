@@ -115,7 +115,7 @@ public class FunctionalTests {
         // *********** ERROR HANDLING SECTION *****************
 
         logger.test("if we try sending too many characters on a line, it should block us");
-        ft.get("a".repeat(InputStreamUtils.MAX_READ_LINE_SIZE_BYTES + 1));
+        ft.get("a".repeat(context.getConstants().maxReadLineSizeBytes + 1));
 
         // remember, we're the client, we don't have immediate access to the server here.  So,
         // we have to wait for it to get through some processing before we check.
