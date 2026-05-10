@@ -9,6 +9,7 @@ import com.renomad.minum.web.IRequest;
 import com.renomad.minum.web.IResponse;
 import com.renomad.minum.web.Response;
 
+import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,12 @@ public class AuthUtils {
         this.logger = context.getLogger();
         this.fileUtils = new FileUtils(context.getLogger(), context.getConstants());
 
-        loginPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/login_page_template.html");
-        registerPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/register_page_template.html");
+        try {
+            loginPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/login_page_template.html");
+            registerPageTemplate = fileUtils.readTextFile("src/main/webapp/templates/auth/register_page_template.html");
+        } catch (IOException ex) {
+            throw new RuntimeException("Error reading template files in AuthUtils", ex);
+        }
     }
 
     public static final String cookieKey = "sessionid";

@@ -9,6 +9,7 @@ import com.renomad.minum.web.IRequest;
 import com.renomad.minum.web.IResponse;
 import com.renomad.minum.web.Response;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,9 +28,13 @@ public class SampleDomain {
     public SampleDomain(Db<PersonName> diskData, AuthUtils auth, FileUtils fileUtils) {
         this.db = diskData;
         this.auth = auth;
-        nameEntryTemplate = TemplateProcessor.buildProcessor(fileUtils.readTextFile("src/main/webapp/templates/sampledomain/name_entry.html"));
-        authHomepage = fileUtils.readTextFile("src/main/webapp/templates/sampledomain/auth_homepage.html");
-        unauthHomepage = fileUtils.readTextFile("src/main/webapp/templates/sampledomain/unauth_homepage.html");
+        try {
+            nameEntryTemplate = TemplateProcessor.buildProcessor(fileUtils.readTextFile("src/main/webapp/templates/sampledomain/name_entry.html"));
+            authHomepage = fileUtils.readTextFile("src/main/webapp/templates/sampledomain/auth_homepage.html");
+            unauthHomepage = fileUtils.readTextFile("src/main/webapp/templates/sampledomain/unauth_homepage.html");
+        } catch (IOException ex) {
+            throw new RuntimeException("Error reading template files in SampleDomain", ex);
+        }
     }
 
     public IResponse formEntry(IRequest r) {

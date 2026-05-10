@@ -37,7 +37,11 @@ public class UploadPhoto {
         this.logger = context.getLogger();
         this.dbDir = Path.of(constants.dbDirectory);
 
-        uploadPhotoTemplateHtml = new FileUtils(context.getLogger(), context.getConstants()).readTextFile("src/main/webapp/templates/uploadphoto/upload_photo_template.html");
+        try {
+            uploadPhotoTemplateHtml = new FileUtils(context.getLogger(), context.getConstants()).readTextFile("src/main/webapp/templates/uploadphoto/upload_photo_template.html");
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading template file in UploadPhoto", e);
+        }
         this.db = db;
     }
 

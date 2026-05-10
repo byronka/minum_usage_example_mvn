@@ -39,7 +39,11 @@ public class ListPhotos {
         this.logger = context.getLogger();
         this.constants = context.getConstants();
         this.dbDir = Path.of(constants.dbDirectory);
-        listPhotosTemplateProcessor = TemplateProcessor.buildProcessor(new FileUtils(context.getLogger(), context.getConstants()).readTextFile("src/main/webapp/templates/listphotos/list_photos_template.html"));
+        try {
+            listPhotosTemplateProcessor = TemplateProcessor.buildProcessor(new FileUtils(context.getLogger(), context.getConstants()).readTextFile("src/main/webapp/templates/listphotos/list_photos_template.html"));
+        } catch (IOException ex) {
+            throw new RuntimeException("Error reading template in ListPhotos", ex);
+        }
         this.up = up;
         this.auth = auth;
         this.lruCache = LRUCache.getLruCache();

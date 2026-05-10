@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class FunctionalTests {
     }
 
     @AfterClass
-    public static void cleanup() {
+    public static void cleanup() throws IOException {
         // delay a sec so our system has time to finish before we start deleting files
         MyThread.sleep(500);
         new FileUtils(context.getLogger(), context.getConstants()).deleteDirectoryRecursivelyIfExists(Path.of(context.getConstants().dbDirectory));
