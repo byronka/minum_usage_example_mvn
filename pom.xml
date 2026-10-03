@@ -20,7 +20,7 @@
     <dependency>
       <groupId>com.renomad</groupId>
       <artifactId>minum</artifactId>
-      <version>11.0.0</version>
+      <version>11.0.3</version>
       <scope>compile</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/junit/junit -->
